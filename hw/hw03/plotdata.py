@@ -17,11 +17,13 @@ def getfile(filepath):
 #PURPOSE: find the daily average for each day in the month before we plot it
 def dailyAvg(data, days):
     dict = {}
+    #print(data)
     for day in range(1, int(days)+1):
-        dict[day] = round(statistics.mean([entry["tput_mbps"] for entry in list(filter(lambda x: int(x["timestamp"][8:10])==day, data))]),2)
-    for day in range(1, int(days)+1): #checks to see if there was day that didn't have any data
-        if day not in dict:
+        day_list = [entry["tput_mbps"] for entry in list(filter(lambda x: int(x["timestamp"][8:10])==day, data))] #list of tput data for a day
+        if len(day_list) == 0:
             dict[day] = 0
+        else:
+            dict[day] = round(statistics.mean(day_list),2)
     return dict
 #INPUT: dict with days as keys and average tput as value, name of the output file
 #OUTPUT: none, just makes a figure and outputs it to your directory

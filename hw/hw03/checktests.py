@@ -5,6 +5,8 @@ import requests
 import json
 import statistics
 import numpy as np
+import plotdata
+import createreport
 
 #INPUT: url as a string
 #OUTPUT: JSON file as a list
@@ -28,7 +30,7 @@ def filterSort(data):
 #OUPUT: JSON file as a list with entries that conatin the values filtered for
 #PURPOSE: return a list of all data points that satisfy the requested filtering (ie. that include the parameters)
 def filterit(data, month = 5, year = 2024, interface = "eth0"):
-    if month>9: #accounting for the fact that one digit integers are written as "05"
+    if int(month)>9: #accounting for the fact that one digit integers are written as "05"
         return list(filter(lambda entry: (entry["interface"]==interface and entry["timestamp"][:4]==str(year) and entry["timestamp"][5:7]==str(month)), data))
     else:
         return list(filter(lambda entry: (entry["interface"]==interface and entry["timestamp"][:4]==str(year) and entry["timestamp"][6:7]==str(month)), data))
@@ -40,7 +42,7 @@ def analyze(data, interface):
     tput_list = [entry["tput_mbps"] for entry in data]
     #start = data[0]["timestamp"].split(['-','T', ':'])
     #end = data[-1]["timestamp"].split(['-','T',':'])
-    dict =  {"Period": "CHANGE THIS ONCE YOU HAVE CLARIFICATION", 
+    dict =  {"Period": f"{data[0]['timestamp'][:4]}-{data[0]['timestamp'][5:7]}", 
              "Interface" : interface, 
              "Num Points": len(data), 
              "Min": round(min(tput_list),2), 
@@ -50,6 +52,8 @@ def analyze(data, interface):
              "Std Dev": round(statistics.stdev(tput_list),2), 
              "10th Percentile": round(np.percentile(tput_list, 10),2), 
              "90th Percentile": round(np.percentile(tput_list, 90),2)}
+    #if args.all:
+    #    dict["Period"] = "ALL"
     return dict
 #INPUT: dictionary with stats
 #OUTPUT: a nice print
@@ -60,14 +64,47 @@ def output(dict):
 
 ###START OF FETCHING###
 parser = argparse.ArgumentParser()
+parser.add_argument("year", type=str)
+parser.add_argument("month", type=str)
+parser.add_argument("txtfile", type=str)
 parser.add_argument("url", type=str)
 args = parser.parse_args()
+year = args.year
+month = args.month
+txtfile = args.txtfile
 url = args.url
+###dict where month number is mapped to number of days in that month###
+month_days = {
+    1: 31,  # January
+    2: 28,  # February
+    3: 31,  # March
+    4: 30,  # April
+    5: 31,  # May
+    6: 30,  # June
+    7: 31,  # July
+    8: 31,  # August
+    9: 30,  # September
+    10: 31,  # October
+    11: 30,  # November
+    12: 31   # December
+}
 ###START OF FILTERING###
 data = fetch(url)
 fsdata = filterSort(data)
-filtered = filterit(fsdata)
-dict = analyze(filtered, "eth0")
+
+filtered_eth0 = filterit(fsdata, month, year)
+filtered_wlan0 = filterit(fsdata, month, year, "wlan0")
+###MAKE DATA DICTIONARIES###
+dict_eth0 = analyze(filtered_eth0, "eth0")
+#print(dict_eth0)#test
+dict_wlan0 = analyze(filtered_wlan0, "wlan0")
+#print(dict_wlan0)#test
+###MAKE PLOTS###
+plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), "eth0.png")
+plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), "wlan0.png")
+###MAKE REPORTS###
+createreport.makeReport(txtfile, dict_eth0, "eth0.png", f"{year}-{month}-Wired.docx")
+createreport.makeReport(txtfile, dict_wlan0, "wlan0.png", f"{year}-{month}-WiFi.docx")
 
 ###TESTS###
 #print(type(data)) #list
