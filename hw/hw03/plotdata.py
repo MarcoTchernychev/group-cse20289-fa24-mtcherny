@@ -32,6 +32,7 @@ def createPlot(dict, outputfile):
     plt.xlabel('Day')
     plt.ylabel('Average Throughput (Mb/s)')
     plt.savefig(outputfile)
+    plt.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
