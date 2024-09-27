@@ -63,17 +63,24 @@ def output(dict):
     for key in dict:
         print(f"{key}: {dict[key]}")
 
+###SETING UP WORKING DIR###
+directory = os.getcwd()
 ###SETTING UP ARGPARSE###
 parser = argparse.ArgumentParser()
 parser.add_argument("year", type=str)
 parser.add_argument("month", type=str)
 parser.add_argument("txtfile", type=str)
 parser.add_argument("url", type=str)
+parser.add_argument('--all', action='store_true')
 args = parser.parse_args()
 year = args.year
-month = args.month
+month = str(int(args.month))
 txtfile = args.txtfile
 url = args.url
+###IF DOCX ALREADY EXISTS###
+for file_name in os.listdir(directory):
+    if file_name == f"{year}-{month}-Wired.docx":
+        print("will overwrite existing docx files")
 ###MONTH NUM : DAY NUM DICT###
 month_days = {
     1: 31,  # January
@@ -95,7 +102,14 @@ data = fetch(url)
 fsdata = filterSort(data)
 ###FILTER FOR WIRED AND WIFI###
 filtered_eth0 = filterit(fsdata, month, year)
+if len(filtered_eth0)==0:
+    print("the year / month requested has no data after filtering")
+    exit(1)
 filtered_wlan0 = filterit(fsdata, month, year, "wlan0")
+if len(filtered_wlan0)==0:
+    print("the year / month requested has no data after filtering")
+    exit(1)
+
 ###MAKE DATA DICTIONARIES FOR WIRED AND WIFI###
 dict_eth0 = analyze(filtered_eth0, "eth0")
 dict_wlan0 = analyze(filtered_wlan0, "wlan0")
@@ -106,7 +120,6 @@ plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), "
 createreport.makeReport(txtfile, dict_eth0, "eth0.png", f"{year}-{month}-Wired.docx")
 createreport.makeReport(txtfile, dict_wlan0, "wlan0.png", f"{year}-{month}-WiFi.docx")
 ####DELETE INTERMEDIATE FILES###
-directory = os.getcwd()  # get current directory
 for file_name in os.listdir(directory):
     if file_name.endswith('.png'):
         os.remove(file_name)
