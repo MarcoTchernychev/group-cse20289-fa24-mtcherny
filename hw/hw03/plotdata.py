@@ -17,7 +17,6 @@ def getfile(filepath):
 #PURPOSE: find the daily average for each day in the month before we plot it
 def dailyAvg(data, days):
     dict = {}
-    #print(data)
     for day in range(1, int(days)+1):
         day_list = [entry["tput_mbps"] for entry in list(filter(lambda x: int(x["timestamp"][8:10])==day, data))] #list of tput data for a day
         if len(day_list) == 0:

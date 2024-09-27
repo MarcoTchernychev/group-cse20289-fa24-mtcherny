@@ -7,6 +7,7 @@ import statistics
 import numpy as np
 import plotdata
 import createreport
+import os
 
 #INPUT: url as a string
 #OUTPUT: JSON file as a list
@@ -62,7 +63,7 @@ def output(dict):
     for key in dict:
         print(f"{key}: {dict[key]}")
 
-###START OF FETCHING###
+###SETTING UP ARGPARSE###
 parser = argparse.ArgumentParser()
 parser.add_argument("year", type=str)
 parser.add_argument("month", type=str)
@@ -73,7 +74,7 @@ year = args.year
 month = args.month
 txtfile = args.txtfile
 url = args.url
-###dict where month number is mapped to number of days in that month###
+###MONTH NUM : DAY NUM DICT###
 month_days = {
     1: 31,  # January
     2: 28,  # February
@@ -88,23 +89,27 @@ month_days = {
     11: 30,  # November
     12: 31   # December
 }
-###START OF FILTERING###
+###FETCHING###
 data = fetch(url)
+###FILTER AND SORT###
 fsdata = filterSort(data)
-
+###FILTER FOR WIRED AND WIFI###
 filtered_eth0 = filterit(fsdata, month, year)
 filtered_wlan0 = filterit(fsdata, month, year, "wlan0")
-###MAKE DATA DICTIONARIES###
+###MAKE DATA DICTIONARIES FOR WIRED AND WIFI###
 dict_eth0 = analyze(filtered_eth0, "eth0")
-#print(dict_eth0)#test
 dict_wlan0 = analyze(filtered_wlan0, "wlan0")
-#print(dict_wlan0)#test
 ###MAKE PLOTS###
 plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), "eth0.png")
 plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), "wlan0.png")
 ###MAKE REPORTS###
 createreport.makeReport(txtfile, dict_eth0, "eth0.png", f"{year}-{month}-Wired.docx")
 createreport.makeReport(txtfile, dict_wlan0, "wlan0.png", f"{year}-{month}-WiFi.docx")
+####DELETE INTERMEDIATE FILES###
+directory = os.getcwd()  # get current directory
+for file_name in os.listdir(directory):
+    if file_name.endswith('.png'):
+        os.remove(file_name)
 
 ###TESTS###
 #print(type(data)) #list
