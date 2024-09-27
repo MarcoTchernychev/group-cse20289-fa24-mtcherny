@@ -3,6 +3,7 @@
 import argparse
 import requests
 import json
+import statistics
 import numpy as np
 
 #INPUT: url as a string
@@ -35,18 +36,27 @@ def filterit(data, month = 5, year = 2024, interface = "eth0"):
 #OUTPUT: dictionary for stats for that dataset
 #PURPOSE: take in data points and for a specific interface find data (specified on github)
 def analyze(data, interface):
-    data = list(filter(lambda entry: entry["Interface"] == interface, data))
+    data = list(filter(lambda entry: entry["interface"] == interface, data))
     tput_list = [entry["tput_mbps"] for entry in data]
-    dict =  {"Period": data[-1]["timestamp"] - data[0]["timestamp"], 
+    #start = data[0]["timestamp"].split(['-','T', ':'])
+    #end = data[-1]["timestamp"].split(['-','T',':'])
+    dict =  {"Period": "CHANGE THIS ONCE YOU HAVE CLARIFICATION", 
              "Interface" : interface, 
              "Num Points": len(data), 
-             "Min": min(tput_list), 
-             "Max": max(tput_list), 
-             "Mean": mean(tput_list), 
-             "Median": median(tput_list), 
-             "Std Dev": stdev(tput_list), 
-             "10th Percentile": np.percentile(tput_list,10), 
-             "90th Percentile": np.percentile(tput_list,90)}
+             "Min": round(min(tput_list),2), 
+             "Max": round(max(tput_list),2), 
+             "Mean": round(statistics.mean(tput_list),2), 
+             "Median": round(statistics.median(tput_list),2), 
+             "Std Dev": round(statistics.stdev(tput_list),2), 
+             "10th Percentile": round(np.percentile(tput_list, 10),2), 
+             "90th Percentile": round(np.percentile(tput_list, 90),2)}
+    return dict
+#INPUT: dictionary with stats
+#OUTPUT: a nice print
+#PURPOSE: make dict readable
+def output(dict):
+    for key in dict:
+        print(f"{key}: {dict[key]}")
 
 ###START OF FETCHING###
 parser = argparse.ArgumentParser()
@@ -57,6 +67,7 @@ url = args.url
 data = fetch(url)
 fsdata = filterSort(data)
 filtered = filterit(fsdata)
+dict = analyze(filtered, "eth0")
 
 ###TESTS###
 #print(type(data)) #list
@@ -69,3 +80,6 @@ filtered = filterit(fsdata)
 #print("\n############################################\n")
 #filtered_string = json.dumps(filtered, indent = 4)
 #print(filtered_string)
+#print("\n############################################\n")
+#print(dict)
+#output(dict)
