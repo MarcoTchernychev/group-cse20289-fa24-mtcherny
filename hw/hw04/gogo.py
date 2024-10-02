@@ -4,6 +4,7 @@ import argparse
 import yaml
 import json
 from functools import reduce
+import checktests.py
 
 #INPUT: a YAMLfile name as str
 #OUTPUT: a dictionary of tasks where each task has an identifier, URL, year, month, filename for starting text, and identifier placed at start of name for any output file in the task
