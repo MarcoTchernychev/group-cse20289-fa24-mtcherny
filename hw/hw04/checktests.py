@@ -108,8 +108,8 @@ def doItAll(year,month, txtfile, url, prepend):
     plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), prepend+"eth0.png")
     plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), prepend+"wlan0.png")
     ###MAKE REPORTS###
-    createreport.makeReport(txtfile, dict_eth0, prepend+"eth0.png", f"{prepend}{year}-{month}-Wired.docx")
-    createreport.makeReport(txtfile, dict_wlan0, prepend+"wlan0.png", f"{prepend}{year}-{month}-WiFi.docx")
+    createreport.makeReport(txtfile, dict_eth0, prepend+"eth0.png", f"{prepend}-{year}-{month}-Wired.docx")
+    createreport.makeReport(txtfile, dict_wlan0, prepend+"wlan0.png", f"{prepend}-{year}-{month}-WiFi.docx")
     ####DELETE INTERMEDIATE FILES###
     for file_name in os.listdir(directory):
         if file_name.endswith('.png'):
