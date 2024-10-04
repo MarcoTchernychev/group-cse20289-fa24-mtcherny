@@ -4,13 +4,11 @@ mtcherny@gmail.com
 
 using pyyaml-6.0.1
 
-Processes   Real Time
-
-1            0m7.597s
-
-2            0m6.101s
-
-4            0m4.774s
+|Processes|Real Time|
+|---------|---------|
+|    1    |0m7.597s |
+|    2    |0m6.101s |
+|    4    |0m4.774s |
 
 Extra credit in webfile.py
 
