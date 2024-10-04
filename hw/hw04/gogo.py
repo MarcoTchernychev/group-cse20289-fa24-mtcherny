@@ -51,31 +51,41 @@ def dataToPDF(taskDict, task):
         print("Traceback info:")
         print(tb)
         exit(1)
-
-#def allGogo()
-
-#PARSING ARGS
-parser = argparse.ArgumentParser()
-parser.add_argument("YAMLfile", type=str, help="Path to the YAML file")
-parser.add_argument("--multi", type=int, help="Number of processors to use")
-args = parser.parse_args()
-YAMLfile = args.YAMLfile
-processors = args.multi
-#PARSE THE YAML
-tasks_dict = parseYAML(YAMLfile)
-if not tasks_dict:
-    ("print no YAML")
-    exit(1)
-#PARALLEL CASE
-if args.multi:
-    with concurrent.futures.ProcessPoolExecutor(max_workers=processors) as executor:
-        executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], [tup[0] for tup in list(tasks_dict.items())])
-    print(f"Completed {len(tasks_dict)} task(s)!")
-#NOT PARALLEL CASE
-else:
+#INPUT: path to yaml file with tasks
+#OUTPUT: pdfs are in directory
+#PURPOSE: have webfile.py call this
+def allGogo(YAMLfile):
+    tasks_dict = parseYAML(YAMLfile)
+    if tasks_dict is None:
+        print("no YAML")
+        exit(1)
     for task in tasks_dict:
         dataToPDF(tasks_dict[task], task)
     print(f"Completed {len(tasks_dict)} task(s)!")
+
+if __name__ == "__main__":
+    #PARSING ARGS
+    parser = argparse.ArgumentParser()
+    parser.add_argument("YAMLfile", type=str, help="Path to the YAML file")
+    parser.add_argument("--multi", type=int, help="Number of processors to use")
+    args = parser.parse_args()
+    YAMLfile = args.YAMLfile
+    processors = args.multi
+    #PARSE THE YAML
+    tasks_dict = parseYAML(YAMLfile)
+    if tasks_dict is None:
+        print("no YAML")
+        exit(1)
+    #PARALLEL CASE
+    if args.multi:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=processors) as executor:
+            executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], [tup[0] for tup in list(tasks_dict.items())])
+        print(f"Completed {len(tasks_dict)} task(s)!")
+    #NOT PARALLEL CASE
+    else:
+        for task in tasks_dict:
+            dataToPDF(tasks_dict[task], task)
+        print(f"Completed {len(tasks_dict)} task(s)!")
 
 #TESTING
 #print(json.dumps(tasks_dict, indent=4))
