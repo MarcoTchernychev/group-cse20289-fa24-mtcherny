@@ -9,6 +9,7 @@ from spire.doc import *
 from spire.doc.common import *
 import os
 import concurrent.futures
+import traceback
 
 #INPUT: a YAMLfile name as str
 #OUTPUT: a dictionary of tasks where each task has an identifier, URL, year, month, filename for starting text, and identifier placed at start of name for any output file in the task
@@ -31,20 +32,27 @@ def parseYAML(YAMLfile):
 #OUTPUT: returns nothing but outputs a pdf that has the same content as the word document from hw3, also, print whne each task is done and when all tasks are done
 #PURPOSE: print the pdf in a concise way
 def dataToPDF(taskDict, task):
-    checktests.doItAll(taskDict["Year"], taskDict["Month"], taskDict["StartText"], taskDict["URL"], taskDict["Prepend"])
-    document1 = Document()
-    document1.LoadFromFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-Wired.docx")
-    document1.SaveToFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-Wired.pdf", FileFormat.PDF)
-    document1.Close()
-    document2 = Document()
-    document2.LoadFromFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-WiFi.docx")
-    document2.SaveToFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-WiFi.pdf", FileFormat.PDF)
-    document2.Close()
-    directory = os.getcwd()
-    for file_name in os.listdir(directory):
-        if file_name.endswith('.docx'):
-            os.remove(file_name)
-    print(f"Task {task} Done!")
+    try:
+        checktests.doItAll(taskDict["Year"], taskDict["Month"], taskDict["StartText"], taskDict["URL"], taskDict["Prepend"], task) #create docx
+        document1 = Document() #create first pdf doc
+        document1.LoadFromFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-Wired.docx")
+        document1.SaveToFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-Wired.pdf", FileFormat.PDF)
+        document1.Close()
+        document2 = Document() #create second pdf doc
+        document2.LoadFromFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-WiFi.docx")
+        document2.SaveToFile(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-WiFi.pdf", FileFormat.PDF)
+        document2.Close()
+        os.remove(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-Wired.docx") #delete docx files
+        os.remove(f"{taskDict['Prepend']}-{taskDict['Year']}-{taskDict['Month']}-WiFi.docx") #delete docx files
+        print(f"Task {task} Done!")
+    except Exception as E:
+        print("exception", E)
+        tb = traceback.format_exc()
+        print("Traceback info:")
+        print(tb)
+        exit(1)
+
+#def allGogo()
 
 #PARSING ARGS
 parser = argparse.ArgumentParser()
@@ -58,10 +66,6 @@ tasks_dict = parseYAML(YAMLfile)
 if not tasks_dict:
     ("print no YAML")
     exit(1)
-#print(json.dumps(tasks_dict, indent=4))#test
-#print(str([tup[1] for tup in list(tasks_dict.items())])+"\n"+str(list(tasks_dict.keys())))#test
-#print(len([tup[1] for tup in list(tasks_dict.items())]))#test
-#print(len(list(tasks_dict.keys())))#test
 #PARALLEL CASE
 if args.multi:
     with concurrent.futures.ProcessPoolExecutor(max_workers=processors) as executor:

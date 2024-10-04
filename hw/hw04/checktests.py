@@ -62,11 +62,10 @@ def analyze(data, interface):
 def output(dict):
     for key in dict:
         print(f"{key}: {dict[key]}")
-
 #INPUT: year, month, txtfile, url, prepend (prepend is put at start of name for any file done in a task)
 #OUTPUT: report docx
 #PURPOSE: make everything that would go in main into a single function (modified functionality for hw04)
-def doItAll(year,month, txtfile, url, prepend):
+def doItAll(year,month, txtfile, url, prepend, task):
     ###SETING UP WORKING DIR###
     directory = os.getcwd()
     ###IF DOCX ALREADY EXISTS###
@@ -105,15 +104,16 @@ def doItAll(year,month, txtfile, url, prepend):
     dict_eth0 = analyze(filtered_eth0, "eth0")
     dict_wlan0 = analyze(filtered_wlan0, "wlan0")
     ###MAKE PLOTS###
-    plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), prepend+"eth0.png")
-    plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), prepend+"wlan0.png")
+    plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), prepend+task+"eth0.png")######################
+    plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), prepend+task+"wlan0.png")######################
     ###MAKE REPORTS###
-    createreport.makeReport(txtfile, dict_eth0, prepend+"eth0.png", f"{prepend}-{year}-{month}-Wired.docx")
-    createreport.makeReport(txtfile, dict_wlan0, prepend+"wlan0.png", f"{prepend}-{year}-{month}-WiFi.docx")
+    createreport.makeReport(txtfile, dict_eth0, prepend+task+"eth0.png", f"{prepend}-{year}-{month}-Wired.docx")######################
+    createreport.makeReport(txtfile, dict_wlan0, prepend+task+"wlan0.png", f"{prepend}-{year}-{month}-WiFi.docx")######################
     ####DELETE INTERMEDIATE FILES###
-    for file_name in os.listdir(directory):
-        if file_name.endswith('.png'):
-            os.remove(file_name)
+    #for file_name in os.listdir(directory):
+        #if file_name.endswith('.png'):
+    os.remove(prepend+task+"eth0.png")
+    os.remove(prepend+task+"wlan0.png")
 
 if __name__ == "__main__":  
     directory = os.getcwd()  
