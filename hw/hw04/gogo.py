@@ -55,14 +55,17 @@ YAMLfile = args.YAMLfile
 processors = args.multi
 #PARSE THE YAML
 tasks_dict = parseYAML(YAMLfile)
+if not tasks_dict:
+    ("print no YAML")
+    exit(1)
+#print(json.dumps(tasks_dict, indent=4))#test
 #print(str([tup[1] for tup in list(tasks_dict.items())])+"\n"+str(list(tasks_dict.keys())))#test
 #print(len([tup[1] for tup in list(tasks_dict.items())]))#test
 #print(len(list(tasks_dict.keys())))#test
 #PARALLEL CASE
 if args.multi:
-    with concurrent.futures.ProcessPoolExecutor(processors) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=processors) as executor:
         executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], [tup[0] for tup in list(tasks_dict.items())])
-        #executor.shutdown(wait=True)
     #print(f"Completed {len(tasks_dict)} task(s)!")
 #NOT PARALLEL CASE
 else:
