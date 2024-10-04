@@ -55,17 +55,20 @@ YAMLfile = args.YAMLfile
 processors = args.multi
 #PARSE THE YAML
 tasks_dict = parseYAML(YAMLfile)
-print(str([tup[1] for tup in list(tasks_dict.items())])+"\n"+str(list(tasks_dict.keys())))#test
+#print(str([tup[1] for tup in list(tasks_dict.items())])+"\n"+str(list(tasks_dict.keys())))#test
+#print(len([tup[1] for tup in list(tasks_dict.items())]))#test
+#print(len(list(tasks_dict.keys())))#test
 #PARALLEL CASE
-#if args.multi:
-#    with concurrent.futures.ProcessPoolExecutor(processors) as executor:
-#        executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], list(tasks_dict.keys()))
-#    print(f"Completed {len(tasks_dict)} task(s)!")
+if args.multi:
+    with concurrent.futures.ProcessPoolExecutor(processors) as executor:
+        executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], [tup[0] for tup in list(tasks_dict.items())])
+        #executor.shutdown(wait=True)
+    #print(f"Completed {len(tasks_dict)} task(s)!")
 #NOT PARALLEL CASE
-#else:
-#    for task in tasks_dict:
-#        dataToPDF(tasks_dict[task], task)
-#    print(f"Completed {len(tasks_dict)} task(s)!")
+else:
+    for task in tasks_dict:
+        dataToPDF(tasks_dict[task], task)
+    print(f"Completed {len(tasks_dict)} task(s)!")
 
 #TESTING
 #print(json.dumps(tasks_dict, indent=4))

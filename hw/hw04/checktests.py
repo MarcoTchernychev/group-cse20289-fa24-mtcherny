@@ -114,64 +114,66 @@ def doItAll(year,month, txtfile, url, prepend):
     for file_name in os.listdir(directory):
         if file_name.endswith('.png'):
             os.remove(file_name)
-    
-###SETTING UP ARGPARSE###
-# parser = argparse.ArgumentParser()
-# parser.add_argument("year", type=str)
-# parser.add_argument("month", type=str)
-# parser.add_argument("txtfile", type=str)
-# parser.add_argument("url", type=str)
-# args = parser.parse_args()
-# year = args.year
-# month = str(int(args.month))
-# txtfile = args.txtfile
-# url = args.url
-# ###IF DOCX ALREADY EXISTS###
-# for file_name in os.listdir(directory):
-#     if file_name == f"{year}-{month}-Wired.docx":
-#         print("will overwrite existing docx files")
-# ###MONTH NUM : DAY NUM DICT###
-# month_days = {
-#     1: 31,  # January
-#     2: 28,  # February
-#     3: 31,  # March
-#     4: 30,  # April
-#     5: 31,  # May
-#     6: 30,  # June
-#     7: 31,  # July
-#     8: 31,  # August
-#     9: 30,  # September
-#     10: 31,  # October
-#     11: 30,  # November
-#     12: 31   # December
-# }
-# ###FETCHING###
-# data = fetch(url)
-# ###FILTER AND SORT###
-# fsdata = filterSort(data)
-# ###FILTER FOR WIRED AND WIFI###
-# filtered_eth0 = filterit(fsdata, month, year)
-# if len(filtered_eth0)==0:
-#     print("the year / month requested has no data after filtering")
-#     exit(1)
-# filtered_wlan0 = filterit(fsdata, month, year, "wlan0")
-# if len(filtered_wlan0)==0:
-#     print("the year / month requested has no data after filtering")
-#    exit(1)
 
-###MAKE DATA DICTIONARIES FOR WIRED AND WIFI###
-#dict_eth0 = analyze(filtered_eth0, "eth0")
-#dict_wlan0 = analyze(filtered_wlan0, "wlan0")
-###MAKE PLOTS###
-#plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), "eth0.png")
-#plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), "wlan0.png")
-###MAKE REPORTS###
-#createreport.makeReport(txtfile, dict_eth0, "eth0.png", f"{year}-{month}-Wired.docx")
-#createreport.makeReport(txtfile, dict_wlan0, "wlan0.png", f"{year}-{month}-WiFi.docx")
-####DELETE INTERMEDIATE FILES###
-#for file_name in os.listdir(directory):
-#    if file_name.endswith('.png'):
-#        os.remove(file_name)
+if __name__ == "__main__":  
+    directory = os.getcwd()  
+###SETTING UP ARGPARSE###
+    parser = argparse.ArgumentParser()
+    parser.add_argument("year", type=str)
+    parser.add_argument("month", type=str)
+    parser.add_argument("txtfile", type=str)
+    parser.add_argument("url", type=str)
+    args = parser.parse_args()
+    year = args.year
+    month = str(int(args.month))
+    txtfile = args.txtfile
+    url = args.url
+    ###IF DOCX ALREADY EXISTS###
+    for file_name in os.listdir(directory):
+        if file_name == f"{year}-{month}-Wired.docx":
+            print("will overwrite existing docx files")
+    ###MONTH NUM : DAY NUM DICT###
+    month_days = {
+        1: 31,  # January
+        2: 28,  # February
+        3: 31,  # March
+        4: 30,  # April
+        5: 31,  # May
+        6: 30,  # June
+        7: 31,  # July
+        8: 31,  # August
+        9: 30,  # September
+        10: 31,  # October
+        11: 30,  # November
+        12: 31   # December
+    }
+    ###FETCHING###
+    data = fetch(url)
+    ###FILTER AND SORT###
+    fsdata = filterSort(data)
+    ###FILTER FOR WIRED AND WIFI###
+    filtered_eth0 = filterit(fsdata, month, year)
+    if len(filtered_eth0)==0:
+        print("the year / month requested has no data after filtering")
+        exit(1)
+    filtered_wlan0 = filterit(fsdata, month, year, "wlan0")
+    if len(filtered_wlan0)==0:
+        print("the year / month requested has no data after filtering")
+        exit(1)
+
+    ##MAKE DATA DICTIONARIES FOR WIRED AND WIFI###
+    dict_eth0 = analyze(filtered_eth0, "eth0")
+    dict_wlan0 = analyze(filtered_wlan0, "wlan0")
+    ##MAKE PLOTS###
+    plotdata.createPlot(plotdata.dailyAvg(filtered_eth0, month_days[int(month)]), "eth0.png")
+    plotdata.createPlot(plotdata.dailyAvg(filtered_wlan0, month_days[int(month)]), "wlan0.png")
+    ##MAKE REPORTS###
+    createreport.makeReport(txtfile, dict_eth0, "eth0.png", f"{year}-{month}-Wired.docx")
+    createreport.makeReport(txtfile, dict_wlan0, "wlan0.png", f"{year}-{month}-WiFi.docx")
+    ###DELETE INTERMEDIATE FILES###
+    for file_name in os.listdir(directory):
+        if file_name.endswith('.png'):
+            os.remove(file_name)
 
 ###TESTS###
 #print(type(data)) #list
