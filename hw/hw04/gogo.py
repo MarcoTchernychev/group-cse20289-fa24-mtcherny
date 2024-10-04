@@ -66,7 +66,7 @@ if not tasks_dict:
 if args.multi:
     with concurrent.futures.ProcessPoolExecutor(max_workers=processors) as executor:
         executor.map(dataToPDF, [tup[1] for tup in list(tasks_dict.items())], [tup[0] for tup in list(tasks_dict.items())])
-    #print(f"Completed {len(tasks_dict)} task(s)!")
+    print(f"Completed {len(tasks_dict)} task(s)!")
 #NOT PARALLEL CASE
 else:
     for task in tasks_dict:
