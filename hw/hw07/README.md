@@ -1,3 +1,5 @@
+README
+
 amelotik@nd.edu
 
 Alicia Melotik
@@ -5,5 +7,3 @@ Alicia Melotik
 mtcherny@nd.edu
 
 Marco Tchernychev
-
-Marco's modification
