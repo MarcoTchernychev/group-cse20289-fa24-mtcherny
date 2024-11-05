@@ -7,16 +7,21 @@
 #!/bin/bash
 #set -x
 
-#check to see that filebeing passed is a txt file
+#getting the actual file
+file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
+#check to see that file being passed is a txt file
 filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
-echo "$filetype"
 if [ "$filetype" != txt ]; then
-    echo "not a txt file"
+    echo "$file not a txt file"
+    exit -1
 fi
 
-#check to see if the exists in the sensitive dir (need to work on this)
-file=$(echo $(ls ./sensitive/) | grep -o -w '"$1"')
-echo "$file"
-if [ "$file" != "$1" ]; then
-    echo "$1 does not exist in sensitive"
+#check to see if the file exists in the sensitive dir
+isfile=$(echo $(ls ./sensitive/) | grep -o -w "$file")
+#if the grep expression didn't return the file display a message
+if [ "$isfile" != "$file" ]; then
+    echo "$file does not exist in sensitive"
+    exit -1
 fi
+
+text=$(read "./$1")
