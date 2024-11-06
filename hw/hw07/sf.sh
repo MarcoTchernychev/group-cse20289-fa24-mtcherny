@@ -24,10 +24,13 @@ if [ "$isfile" != "$file" ]; then
     exit -1
 fi
 
+echo "scanning for sensitive information"
+echo "file to scan: $1"
+
 for word in $(cat ./sensitive/"$file"); do
-    #echo "line: $word"
+    #see if there's a sensitive info match in the word
     match=$(echo "$word" | grep -Eo "\*SENSITIVE\*|[0-9]{3}-[0-9]{2}-[0-9]{4}|9022[0-9]{5}") 
-    #echo "match: $match"
+    #if the match isn't empty go through and check to see what it matched to and print appropiate message
     if [ "$match" != ' ' ]; then
         if [ "$match" == *SENSITIVE* ]; then
             echo "SENSITIVE, MARKED SENSITIVE"
@@ -43,5 +46,5 @@ for word in $(cat ./sensitive/"$file"); do
         fi
     fi
 done
+#if it passed the regex matches, print CLEAN
 echo "CLEAN"
-
