@@ -7,9 +7,21 @@
 #!/bin/bash
 #set -x
 
+#check if the doesn't file exists
+if [ ! -f "$1" ]; then
+    echo "$1 doesn't exist"
+    exit -1
+fi
+
 #-o returns the match, '\.' looks for a period, then it takes evrything after the period until the end of the line
 #sed, using 's', subs out what's in the first // (which is a leading period), for what is the second //, which is nothing, so take out the leading period /^\./ --> //
 filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
+
+#check if the file is tar, tar.gz, or .zip
+if ! echo "$filetype" | grep -wq "zip|tar|tar.gz"; then
+    echo "Not a .zip, .tar, or .tar.gz file"
+    exit -1
+fi
 
 #check to see if archive is in the directory
 isarchive=$(echo $(ls) | grep -o -w 'archive')
