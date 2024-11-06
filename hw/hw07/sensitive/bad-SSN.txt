@@ -1,1 +1,2 @@
-This is a file that trips the social security number. Here is the demo SSN: 304-28-9837.
+This is a file that trips the social security number. 
+Here is the demo SSN: 304-28-9837 on a new line.

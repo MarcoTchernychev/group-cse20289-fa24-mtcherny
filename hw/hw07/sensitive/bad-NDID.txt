@@ -1,1 +1,1 @@
-This is a file that contains a Notre Dame 900 number. Here is the demo NDID: 902259451.
+This is a file that contains a Notre Dame 900 number. Here is the demo NDID: 902259451 on the same line.

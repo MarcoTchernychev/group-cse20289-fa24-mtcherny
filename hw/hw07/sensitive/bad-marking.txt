@@ -1,1 +1,2 @@
 A file that trips the *SENSITIVE* marker.
+Here's another line.

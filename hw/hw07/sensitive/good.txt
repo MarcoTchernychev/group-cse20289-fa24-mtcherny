@@ -1,1 +1,2 @@
 This is a clean file that does not contain any sensitive information.
+Here is another line.

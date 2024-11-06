@@ -24,4 +24,24 @@ if [ "$isfile" != "$file" ]; then
     exit -1
 fi
 
-text=$(read "./$1")
+for word in $(cat ./sensitive/"$file"); do
+    #echo "line: $word"
+    match=$(echo "$word" | grep -Eo "\*SENSITIVE\*|[0-9]{3}-[0-9]{2}-[0-9]{4}|9022[0-9]{5}") 
+    #echo "match: $match"
+    if [ "$match" != ' ' ]; then
+        if [ "$match" == *SENSITIVE* ]; then
+            echo "SENSITIVE, MARKED SENSITIVE"
+            exit -1
+        fi
+        if echo "$match" | grep -Eq "[0-9]{3}-[0-9]{2}-[0-9]{4}"; then
+            echo "SENSITIVE, SSN"
+            exit -1
+        fi
+        if echo "$match" | grep -Eq "9022[0-9]{5}"; then
+            echo "SENSITIVE, STUDENTID"
+            exit -1
+        fi
+    fi
+done
+echo "CLEAN"
+
