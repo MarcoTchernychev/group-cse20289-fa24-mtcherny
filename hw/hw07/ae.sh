@@ -7,6 +7,12 @@
 #!/bin/bash
 #set -x
 
+#check for proper number or args
+if [ $# -ne 1 ]; then
+	echo "Incorrect number of arguments. Usage: $0 <file>"
+	exit -1
+fi
+
 #check if the doesn't file exists
 if [ ! -f "$1" ]; then
     echo "$1 doesn't exist"
