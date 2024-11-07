@@ -7,6 +7,12 @@
 #!/bin/bash
 #set -x
 
+#check for proper number or args
+if [ $# -ne 1 ]; then
+	echo "Incorrect number of arguments. Usage: $0 <file>"
+	exit -1
+fi
+
 #getting the actual file
 file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
 #check to see that file being passed is a txt file
