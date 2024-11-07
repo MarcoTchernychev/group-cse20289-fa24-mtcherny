@@ -30,9 +30,16 @@ if [ ! -f "$2" ]; then
     exit -1
 fi
 
-########REPLACE $3 with FOUND URL COLUMN?#########
 #extract bad urls as list from csv
-urls=$(awk -F ',' ' NR > 1 { print $3}' "$1")
+count=-1
+while IFS= read -r line; do
+	if [ $(echo "$line" | grep -o "," | wc -l) -gt 1 ]; then
+		count=$(echo "$line" | sed "s/\(url\).*//" | grep -o "," | wc -l)
+		((count++))
+		break
+	fi
+done < $1
+urls=$(awk -F ',' -v col="$count" 'NR > 1 { print $(col) }' "$1")
 
 #read in the arg file and check each line with the bad url list
 while read f; do

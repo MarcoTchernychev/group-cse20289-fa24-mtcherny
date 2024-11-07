@@ -18,9 +18,9 @@ fi
 filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
 
 #check if the file is tar, tar.gz, or .zip
-if ! echo "$filetype" | grep -wq "zip|tar|tar.gz"; then
+if ! echo "$filetype" | grep -qE "zip|tar|tar\.gz"; then
     echo "Not a .zip, .tar, or .tar.gz file"
-    #exit -1
+    exit -1
 fi
 
 #check to see if archive is in the directory

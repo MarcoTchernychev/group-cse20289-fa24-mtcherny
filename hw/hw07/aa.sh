@@ -29,10 +29,9 @@ files=$(find ./archive -maxdepth 1 -type f)
 #then check for sensitive info
 for f in $files
 do
-	echo $f
-	badResult=$(./sbs.sh $2 $f)
+	badSitesResult=$(./sbs.sh $2 $f)
 	if [[ $? -ne 0 ]]; then
-		echo "$badResult"
+		echo "$badSitesResult"
 		rm -r archive/
 		exit -2
 	fi
@@ -40,7 +39,7 @@ do
 	if [[ $? -ne 0 ]]; then
 		echo "$sensitiveResult" | tail -n1
 		rm -r archive/
-		exit -2
+		exit -3
 	fi
 done
 
