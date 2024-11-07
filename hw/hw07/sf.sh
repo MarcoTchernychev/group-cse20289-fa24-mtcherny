@@ -15,12 +15,13 @@ fi
 
 #getting the actual file
 file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
-#check to see that file being passed is a txt file
-filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
-if [ "$filetype" != txt ]; then
-    echo "$file not a txt file"
-    exit -1
-fi
+
+#check to see that file being passed is a txt file (commented out -- no need(?))
+#filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
+#if [ "$filetype" != txt ]; then
+#    echo "$file not a txt file"
+#    exit -1
+#fi
 
 #check to see if the file exists in the sensitive dir
 isfile=$(echo $(ls ./sensitive/) | grep -o -w "$file")
