@@ -20,6 +20,17 @@ if [ ! -f "$2" ]; then
 	echo "Error: bad sites file $2 could not be found"
 	exit -1
 fi
+if [ $# -e 4 ]; then
+	if [[ "$3" != "-ad" ]]; then
+		echo "Usage: $0 <file-to-extract> <badsites-file> [-ad X]"
+		exit -1
+	fi
+	if [[ "$4" =~ ^(?![0-3]$).+$ ]]; then
+		echo "Error: archive depth can only be an int from 0 to 3"
+		exit -1
+	fi
+
+fi
 
 #first, extract the archive and find files
 sh ae.sh "$1" >/dev/null
