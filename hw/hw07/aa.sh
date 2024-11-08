@@ -8,7 +8,7 @@
 #set -x
 
 #check if archive file provided as argument
-if [ $# -ne 2 -o $# -ne 4 ]; then
+if [ $# -ne 2 -a $# -ne 4]; then
 	echo "Usage: $0 <file-to-extract> <badsites-file>"
 	exit -1
 fi
