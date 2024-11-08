@@ -24,12 +24,12 @@ file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
 #fi
 
 #check to see if the file exists in the sensitive dir
-isfile=$(echo $(ls ./sensitive/) | grep -o -w "$file")
+#isfile=$(echo $(ls ./sensitive/) | grep -o -w "$file")
 #if the grep expression didn't return the file display a message
-if [ "$isfile" != "$file" ]; then
-    echo "$file does not exist in sensitive"
-    exit -1
-fi
+#if [ "$isfile" != "$file" ]; then
+#    echo "$file does not exist in sensitive"
+#    exit -1
+#fi
 
 echo "scanning for sensitive information"
 echo "file to scan: $1"
