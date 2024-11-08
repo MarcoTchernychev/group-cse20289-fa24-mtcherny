@@ -24,12 +24,22 @@ fi
 #first, extract the archive and find files
 sh ae.sh "$1" >/dev/null
 files=$(find ./archive -type f)
+<<<<<<< HEAD
+=======
+echo $files
+>>>>>>> dbac008ea6a664ea953c20e146844a426a6e7df5
 
 #next, check the extracted files for bad urls
 #then check for sensitive info
 for f in $files
 do
+<<<<<<< HEAD
 	echo "FILE: $f"
+=======
+	if [[ "$f" == *"/._"* ]]; then
+		continue
+	fi	
+>>>>>>> dbac008ea6a664ea953c20e146844a426a6e7df5
 	badSitesResult=$(./sbs.sh $2 $f)
 	if [[ $? -ne 0 ]]; then
 		echo "$badSitesResult"
