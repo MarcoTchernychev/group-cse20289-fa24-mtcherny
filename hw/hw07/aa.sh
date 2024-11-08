@@ -5,7 +5,7 @@
 #mtcherny@nd.edu
 
 #!/bin/bash
-set -x
+#set -x
 
 #check if archive file provided as argument
 if [ $# -ne 2 ]; then
@@ -24,15 +24,16 @@ fi
 #first, extract the archive and find files
 sh ae.sh "$1" >/dev/null
 files=$(find ./archive -type f)
-echo $files
 
 #next, check the extracted files for bad urls
 #then check for sensitive info
 for f in $files
 do
+	#skip files starting with ._
 	if [[ "$f" == *"/._"* ]]; then
 		continue
 	fi	
+	
 	badSitesResult=$(./sbs.sh $2 $f)
 	if [[ $? -ne 0 ]]; then
 		echo "$badSitesResult"
