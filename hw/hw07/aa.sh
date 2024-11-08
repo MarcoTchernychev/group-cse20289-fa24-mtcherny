@@ -23,12 +23,16 @@ fi
 
 #first, extract the archive and find files
 sh ae.sh "$1" >/dev/null
-files=$(find ./archive -maxdepth 1 -type f)
+files=$(find ./archive -type f)
+echo $files
 
 #next, check the extracted files for bad urls
 #then check for sensitive info
 for f in $files
 do
+	if [[ "$f" == *"/._"* ]]; then
+		continue
+	fi	
 	badSitesResult=$(./sbs.sh $2 $f)
 	if [[ $? -ne 0 ]]; then
 		echo "$badSitesResult"

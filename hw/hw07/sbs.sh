@@ -45,6 +45,7 @@ urls=$(awk -F ',' -v col="$count" 'NR > 1 { print $(col) }' "$1")
 while read f; do
 	for i in $urls
 	do
+		#echo "$f"
 		#search f for each i
 		if echo "$f" | grep -q "$i"; then
 			echo "MALICIOUSURL: $i"
