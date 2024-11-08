@@ -8,7 +8,7 @@
 #set -x
 
 #check if archive file provided as argument
-if [ $# -ne 2 ]; then
+if [ $# -ne 2 -o $# -ne 4 ]; then
 	echo "Usage: $0 <file-to-extract> <badsites-file>"
 	exit -1
 fi
@@ -21,25 +21,30 @@ if [ ! -f "$2" ]; then
 	exit -1
 fi
 
-#first, extract the archive and find files
+#first, extract the first file into archive
 sh ae.sh "$1" >/dev/null
+#if nested files... then
+if [ $# -e 4 ]; then
+	for depth in $4 #if specified depth is 3, do the following three times
+	do
+		for f in $(find./archive -type f)  #for each file in archive
+		do
+			sh ae.sh "$f" >/dev/null #run ae.sh on it
+		done
+	done
+fi
+
 files=$(find ./archive -type f)
-<<<<<<< HEAD
-=======
 echo $files
->>>>>>> dbac008ea6a664ea953c20e146844a426a6e7df5
 
 #next, check the extracted files for bad urls
 #then check for sensitive info
 for f in $files
 do
-<<<<<<< HEAD
 	echo "FILE: $f"
-=======
 	if [[ "$f" == *"/._"* ]]; then
 		continue
 	fi	
->>>>>>> dbac008ea6a664ea953c20e146844a426a6e7df5
 	badSitesResult=$(./sbs.sh $2 $f)
 	if [[ $? -ne 0 ]]; then
 		echo "$badSitesResult"
