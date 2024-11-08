@@ -20,7 +20,7 @@ if [ ! -f "$2" ]; then
 	echo "Error: bad sites file $2 could not be found"
 	exit -1
 fi
-if [ $# -e 4 ]; then
+if [ $# -eq 4 ]; then
 	if [[ "$3" != "-ad" ]]; then
 		echo "Usage: $0 <file-to-extract> <badsites-file> [-ad X]"
 		exit -1
@@ -35,7 +35,7 @@ fi
 #first, extract the first file into archive
 sh ae.sh "$1" >/dev/null
 #if nested files... then
-if [ $# -e 4 ]; then
+if [ $# -eq 4 ]; then
 	for depth in $4 #if specified depth is 3, do the following three times
 	do
 		for f in $(find./archive -type f)  #for each file in archive
