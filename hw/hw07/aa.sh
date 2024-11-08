@@ -51,11 +51,8 @@ files=$(find ./archive -type f)
 #then check for sensitive info
 for f in $files
 do
-<<<<<<< HEAD
 	#skip files starting with ._
-=======
 	echo "FILE: $f"
->>>>>>> 67b1f0c804747a6a2e406712ed94ba96fd3c3d88
 	if [[ "$f" == *"/._"* ]]; then
 		continue
 	fi	
