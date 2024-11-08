@@ -21,7 +21,8 @@ fi
 
 #-o returns the match, '\.' looks for a period, then it takes evrything after the period until the end of the line
 #sed, using 's', subs out what's in the first // (which is a leading period), for what is the second //, which is nothing, so take out the leading period /^\./ --> //
-filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
+#filetype=$(echo "$1" | grep -o '\..*$' | sed 's/^\.//')
+filetype=$(echo "$1" | awk -F '/' '{print $NF}' | grep -o '\..*$' | sed 's/^\.//')
 
 #check if the file is tar, tar.gz, or .zip
 if ! echo "$filetype" | grep -qE "zip|tar|tar\.gz"; then
@@ -40,6 +41,7 @@ if [ "$isarchive" != archive ]; then
 else
     echo "archive directory already present - no need to create"
 fi
+echo "$1 $filetype"
 
 #based on the file type display the appropiate message and zip/extract accordingly into the archive dir
 case $filetype in

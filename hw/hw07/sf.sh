@@ -13,6 +13,11 @@ if [ $# -ne 1 ]; then
 	exit -1
 fi
 
+if [ ! -f "$1" ]; then
+	echo "Error: $1 is not a file"
+	exit -1
+fi
+
 #getting the actual file
 file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
 
@@ -34,7 +39,7 @@ file=$(echo "$1" | grep -o '\/.*$' | sed 's/^\///')
 echo "scanning for sensitive information"
 echo "file to scan: $1"
 
-for word in "$file"; do
+for word in $(cat "$1" | tr -d '\0'); do
     #see if there's a sensitive info match in the word
     match=$(echo "$word" | grep -Eo "\*SENSITIVE\*|[0-9]{3}-[0-9]{2}-[0-9]{4}|9022[0-9]{5}") 
     #if the match isn't empty go through and check to see what it matched to and print appropiate message
@@ -53,5 +58,6 @@ for word in "$file"; do
         fi
     fi
 done
+
 #if it passed the regex matches, print CLEAN
 echo "CLEAN"
