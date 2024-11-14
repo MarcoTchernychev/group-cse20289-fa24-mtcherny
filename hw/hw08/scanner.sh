@@ -22,21 +22,33 @@ if [ ! -e $5]; then echo "$5 does not exist"; exit 1; fi
 
 #starting inf loop
 while true; do    
-    files=$(ls ./scandata/toscan) #getting list of files in toscan dir   
+    files=$(ls ./scandata/toscan) #getting list of files in toscan dir 
+	#is this list of archives? when do we extract the archives?
+	logname="$(date +%F).log"
+ 
     for file in $(files); do #looping over the files        
         urloutput=$(sh sbs.sh $5 "$file") #check for malicious url        
-        if [ $? -e 0 ]; do #check that file is valid (only need to do once)
+		reasonfile="$file.reason"
+        if [ $? -e 0 ]; then #check that file is valid (only need to do once)
             #move to quarantine with reason cannot extract, along with .reason file
+			mv "$file" "$3"
+			echo -e "$file\nCANNOTEXTRACT" > "$reasonfile"
+			mv "$reasonfile" "$3"
         fi        
         sensitiveoutput=$(sh sf.sh "$file") #check for sensitive info       
         if [[ sensitiveoutput == CLEAN && urloutput==CLEAN ]]; then #if both pass add file to approved 
             #move to approved
-        fi        
-        if [[ sensitiveoutput != CLEAN ]]; then #if contains sensitive info move to quarantine
+			mv "$file" "$2"
+        elif [[ sensitiveoutput != CLEAN ]]; then #if contains sensitive info move to quarantine
             #move to quanrantine along with .reason file
-        fi       
-        if [[ urloutput != CLEAN ]]; then #if contains malicious url move to quarantine
+			mv "$file" "$3"
+			echo -e "$file\nSENSITIVE\n$(tail -n 1 "$sensitiveoutput")" > "$reasonfile"
+			mv "$reasonfile" "$3"
+        elif [[ urloutput != CLEAN ]]; then #if contains malicious url move to quarantine
             #move to quanrantine along with .reason file
+			mv "$file" "$3"
+			echo -e "$file\nMALICIOUSURL\n$(tail -n 1 "$urloutput")" > "$reasonfile"
+			mv "$reasonfile" "$3"
         fi
     done
     sleep 1
