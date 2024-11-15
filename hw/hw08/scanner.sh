@@ -14,11 +14,11 @@ if [ $# -ne 5 ]; then
 fi
 
 #check that all args exist
-if [ ! -e $1 ]; then echo "$1 does not exist"; exit 1; fi
-if [ ! -e $2 ]; then echo "$2 does not exist"; exit 1; fi
-if [ ! -e $3 ]; then echo "$3 does not exist"; exit 1; fi
-if [ ! -e $4 ]; then echo "$4 does not exist"; exit 1; fi
-if [ ! -e $5 ]; then echo "$5 does not exist"; exit 1; fi
+if [ ! -e $1 -o ! -d $1 ]; then echo "$1 is not a valid directory"; exit 1; fi
+if [ ! -e $2 -o ! -d $2 ]; then echo "$2 is not a valid directory"; exit 1; fi
+if [ ! -e $3 -o ! -d $3 ]; then echo "$3 is not a valid directory"; exit 1; fi
+if [ ! -e $4 -o ! -d $4 ]; then echo "$4 is not a valid directory"; exit 1; fi
+if [ ! -e $5 -o ! -f $5 ]; then echo "$5 is not a valid file"; exit 1; fi
 
 logname="$(date +%F).log"
 #add to log time when script started
@@ -33,7 +33,7 @@ while true; do
 	#each file within the archive is clean before adding to proper directory and log
 	for archive in $(ls $1); do
 		reasonfile="$archive.reason"
-		extractoutput=$(sh ae.sh "$1$archive")
+		extractoutput=$(sh ./helperscripts/ae.sh "$1$archive")
 
         if [ $? -ne 0 ]; then #check that archive is valid (only need to do once)
             #move to quarantine with reason cannot extract, along with .reason file
@@ -45,8 +45,8 @@ while true; do
         fi   
 
     	for file in $(find ./archive -type f); do #looping over the files        
-       		urloutput=$(sh sbs.sh $5 "$file" | tail -n 1) #check for malicious url        
-        	sensitiveoutput=$(sh sf.sh "$file" | tail -n 1) #check for sensitive info       
+       		urloutput=$(sh ./helperscripts/sbs.sh $5 "$file" | tail -n 1) #check for malicious url        
+        	sensitiveoutput=$(sh ./helperscripts/sf.sh "$file" | tail -n 1) #check for sensitive info       
 
         	if [[ "$sensitiveoutput" == CLEAN && "$urloutput" == CLEAN ]]; then #if both pass, check rest of files 
 				continue
