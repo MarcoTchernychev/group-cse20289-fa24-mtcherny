@@ -5,7 +5,7 @@
 #mtcherny@nd.edu
 
 #!/bin/bash
-set -x
+#set -x
 
 #check for correct number of args
 if [ $# -ne 5 ]; then
