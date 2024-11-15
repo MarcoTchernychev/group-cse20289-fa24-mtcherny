@@ -45,15 +45,15 @@ for word in $(cat "$1" | tr -d '\0'); do
     #if the match isn't empty go through and check to see what it matched to and print appropiate message
     if [ "$match" != ' ' ]; then
         if [ "$match" == *SENSITIVE* ]; then
-            echo "SENSITIVE, MARKED SENSITIVE"
+            echo "MARKED SENSITIVE"
             exit -1
         fi
         if echo "$match" | grep -Eq "[0-9]{3}-[0-9]{2}-[0-9]{4}"; then
-            echo "SENSITIVE, SSN"
+            echo "SSN"
             exit -1
         fi
         if echo "$match" | grep -Eq "9022[0-9]{5}"; then
-            echo "SENSITIVE, STUDENTID"
+            echo "STUDENTID"
             exit -1
         fi
     fi

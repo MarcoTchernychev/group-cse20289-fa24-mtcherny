@@ -45,22 +45,22 @@ while true; do
         fi   
 
     	for file in $(find ./archive -type f); do #looping over the files        
-       		urloutput=$(sh sbs.sh $5 "$file") #check for malicious url        
-        	sensitiveoutput=$(sh sf.sh "$file") #check for sensitive info       
+       		urloutput=$(sh sbs.sh $5 "$file" | tail -n 1) #check for malicious url        
+        	sensitiveoutput=$(sh sf.sh "$file" | tail -n 1) #check for sensitive info       
 
-        	if [[ sensitiveoutput == CLEAN && urloutput == CLEAN ]]; then #if both pass, check rest of files 
+        	if [[ "$sensitiveoutput" == CLEAN && "$urloutput" == CLEAN ]]; then #if both pass, check rest of files 
 				continue
-        	elif [[ sensitiveoutput != CLEAN ]]; then #if contains sensitive info move to quarantine
+        	elif [[ "$sensitiveoutput" != CLEAN ]]; then #if contains sensitive info move to quarantine
             #move to quanrantine along with .reason file
-				reason="$(echo "$sensitiveoutput" | tail -n 1)"
+				reason="$(echo "$sensitiveoutput")"
 				echo -e "$file\nSENSITIVE\n$reason" > "$reasonfile"
 				echo  "$(date), $archive, QUARANTINE, SENSITIVE, $reason" >> "$4/$logname"
 				mv "$1/$archive" "$3"
 				mv "$reasonfile" "$3"
 				break	
-        	elif [[ urloutput != CLEAN ]]; then #if contains malicious url move to quarantine
+        	elif [[ "$urloutput" != CLEAN ]]; then #if contains malicious url move to quarantine
             	#move to quanrantine along with .reason file
-				reason="$(echo "$urloutput" | tail -n 1)"
+				reason="$(echo "$urloutput")"
 				echo -e "$file\nMALICIOUSURL\n$reason" > "$reasonfile"
 				echo  "$(date), $archive, QUARANTINE, MALICIOUSURL, $reason" >> "$4/$logname"
 				mv "$1/$archive" "$3"
@@ -68,7 +68,7 @@ while true; do
 				break
         	fi
     	done
-		if [[ sensitiveoutput == CLEAN && urloutput == CLEAN ]]; then 
+		if [[ "$sensitiveoutput" == CLEAN && "$urloutput" == CLEAN ]]; then 
 			echo  "$(date), $archive, APPROVE" >> "$4/$logname"
 			mv "$1/$archive" "$2"
 		fi

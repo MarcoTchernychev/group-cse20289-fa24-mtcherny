@@ -48,7 +48,7 @@ while read f; do
 		#echo "$f"
 		#search f for each i
 		if echo "$f" | grep -q "$i"; then
-			echo "MALICIOUSURL: $i"
+			echo "$i"
 			exit -2
 		fi
 	done

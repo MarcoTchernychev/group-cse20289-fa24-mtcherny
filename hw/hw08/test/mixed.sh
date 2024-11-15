@@ -12,7 +12,7 @@ sleep 2
 cp ./archives/example-targz.tar.gz ~/repos/group-cse20289-fa24-mtcherny/hw/hw08/scandata/toscan
 sleep 2
 #good
-cp /archives/good.tar ~/repos/group-cse20289-fa24-mtcherny/hw/hw08/scandata/toscan
+cp ./archives/good.tar ~/repos/group-cse20289-fa24-mtcherny/hw/hw08/scandata/toscan
 sleep 2
 #bad
 cp ./archives/SSN.zip ~/repos/group-cse20289-fa24-mtcherny/hw/hw08/scandata/toscan
