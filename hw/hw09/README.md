@@ -1,6 +1,6 @@
 Alicia Melotik
 
-amoletik@nd.edu
+amelotik@nd.edu
 
 Marco Tchernychev
 
