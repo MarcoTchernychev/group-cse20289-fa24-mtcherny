@@ -13,7 +13,6 @@ all: $(TARGETS)
 $(DEBUGTARGET): CFLAGS += -g
 $(DEBUGTARGET): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
-#valgrind --leak-check=full --track-origins=yes ./$(TARGET) $(ARGS)
 
 $(TARGET): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
