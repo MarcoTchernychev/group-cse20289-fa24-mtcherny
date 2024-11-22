@@ -230,7 +230,6 @@ char readPcapFile (struct FilePcapInfo * pFileInfo)
 	}
 
 	fclose(pTheFile);
-
 	printf("File processing complete - %s file read containing %d packets with %d bytes of packet data\n", pFileInfo->FileName, pFileInfo->Packets, pFileInfo->BytesRead);
 	return 1;
 }

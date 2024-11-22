@@ -41,6 +41,7 @@ int main (int argc, char *argv[])
     theInfo.MaxPackets = 0;
 
     printf("MAIN: Attempting to read in the file named %s\n", theInfo.FileName);
+    
     readPcapFile(&theInfo);
 
     printf("Summarizing the processed entries\n");
@@ -61,6 +62,7 @@ int main (int argc, char *argv[])
 
     printf("  Total Duplicate Percent: %6.2f%%\n", fPct);
 
-
+    free(theInfo.FileName); //strdup dynamically allocated this
+    free(BigTable); //free this malloc'd thing
     return 0;
 }

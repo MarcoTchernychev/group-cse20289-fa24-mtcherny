@@ -219,7 +219,7 @@ void processPacket (struct Packet * pPacket)
 
                 /* The packets match so get rid of the matching one */
                 // Hoping this fixes the segfault - maybe?
-                //discardPacket(pPacket);
+                discardPacket(pPacket); //Uncommented this
                 return;
             }
         }
