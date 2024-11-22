@@ -13,7 +13,7 @@ struct Packet * allocatePacket (uint16_t DataSize)
     {   
         /* Removed - causing issues */
         /* Future: Make sure to test for this on a return */
-        // printf("Error - Requested data size (%d) was too big (more than %d)\n", DataSize, PKT_SIZE_LIMIT);
+        printf("Error - Requested data size (%d) was too big (more than %d)\n", DataSize, PKT_SIZE_LIMIT);
         return NULL;
     }
 

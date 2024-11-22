@@ -221,6 +221,7 @@ char readPcapFile (struct FilePcapInfo * pFileInfo)
 		/* Allow for an early bail out if specified */
 		if(pFileInfo->MaxPackets != 0)
 		{
+			printf("max packets\n");
 			if(pFileInfo->Packets >= pFileInfo->MaxPackets)
 			{
 				break;

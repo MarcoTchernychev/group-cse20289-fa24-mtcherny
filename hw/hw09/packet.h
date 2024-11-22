@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 
-#define PKT_SIZE_LIMIT  1500
+#define PKT_SIZE_LIMIT  2500 //increased because 1500 was too low for wifi packet size 
 
 /* A data packet as parsed from a pcap file 
  * 

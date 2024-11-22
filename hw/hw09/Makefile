@@ -6,12 +6,14 @@ LIBS=	-lm
 SOURCE= $(wildcard *.c)
 OBJECTS=$(SOURCE:.c=.o)
 TARGET= redextract
+DEBUGTARGET= redextract-debug
 
 all: $(TARGETS)
 
-redextract-debug: CFLAGS += -g
-redextract-debug: $(TARGET)
-	valgrind --leak-check=full --track-origins=yes ./$(TARGET) $(ARGS)
+$(DEBUGTARGET): CFLAGS += -g
+$(DEBUGTARGET): $(OBJECTS)
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+#valgrind --leak-check=full --track-origins=yes ./$(TARGET) $(ARGS)
 
 $(TARGET): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
@@ -20,4 +22,4 @@ $(TARGET): $(OBJECTS)
 	$(CC) -c $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) $(DEBUGTARGET) *.o

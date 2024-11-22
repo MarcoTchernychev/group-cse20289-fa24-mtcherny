@@ -1,4 +1,5 @@
 redextract
+redextract-debug
 packet.o
 pcap-read.o
 pcap-process.o
