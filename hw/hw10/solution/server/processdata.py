@@ -5,6 +5,7 @@
 #mtcherny@nd.edu
 
 import requests
+import statistics
 
 #INPUT: url as a string
 #OUTPUT: JSON file as a list
@@ -49,6 +50,28 @@ def filter(json, date, time, field="iface=eth0;dir=downlink;type=iperf"):
         add = 1
             
     return filteredData
+
+#INPUT: filtered list of json data, stat to be found 
+#OUTPUT: calculated stat
+def calcStat(data, stat):
+    dataPts = []
+    for entry in data:
+        dataPts.append(entry['tput_mbps'])
+    
+    if stat == "count":
+        return len(dataPts)
+    elif stat == "mean":
+        return statistics.mean(dataPts)
+    elif stat == "median":
+        return statistics.median(dataPts)
+    elif stat == "min":
+        return min(dataPts)
+    elif stat == "max":
+        return max(dataPts)
+    elif stat == "stddev":
+        if len(dataPts) > 1:
+            return statistics.stdev(dataPts)
+    
 
 #data = fetch("http://ns-mn1.cse.nd.edu/cse20289-fa24/hw03/data-10.json")
 #filtered = filter(data, "*-*-*", "*")
