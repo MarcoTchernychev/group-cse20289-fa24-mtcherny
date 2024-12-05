@@ -77,6 +77,17 @@ def checkCmnds(message):
         print("SENT: failure, not enough arguments")
         return False
 
+#INPUT: JSON file of the list
+#OUTPUT: content of one line of the JSON file formatted as: success, #of lines remaining, key (eg. "timestamp"), value (eg. "the actual timestamp"), ...
+#PURPOSE: check that there are lines remaining to do "more" on, and if there are, send the data... otherwise send a failure
+def more(json):
+    if len(json) == 0: #if no data left to do more on
+        socket.send_string("failure, no more data to send")
+        print("SENT: failure, no more data to send")
+    else:
+        line = json.pop[0]
+
+
 url = sys.argv[1]
 serverPort = int(sys.argv[2]) #40645
 
@@ -89,6 +100,9 @@ except:
     print(f'Failed to bind on port {serverPort}')
     exit()
 
+lastcmnd = '' #holder for the last command (if more is called we want to make sure list was the last command)
+lastjson = [] #holder for the last json
+
 while True:
     try:
         print("Waiting for a new command") #wait for next command from client
@@ -96,29 +110,49 @@ while True:
         print(f"RCVD: {message}") #notify user that command was recieved
         if checkCmnds(message) == False: #check that command is valid - if it isn't then notify user and continue
             continue
-        if message.split[0] == "exit": #if exit message is quit then quit
-            print("SENT: success, exiting") 
-            exit()
         
         data = processdata.fetch(url) #get the data
-        
         commands = message.split(', ')
 
-        ####deal with more####
-        ###   make sure to conitnue inside the if stmnt   ###
-        if len(commands)==1: #if more command
-            pass
-        elif len(commands)==3:
+        if commands[0] == "exit": #if exit message is quit then quit
+            print("SENT: success, exiting") 
+            exit()
+        if commands[0]=="more": #if more command
+            #check that list was called last
+            if lastcmnd != "list":
+                print("error - must do list first")
+                socket.send_string("failure, didn't do list yet")
+                print("SENT: failure, didn't do list yet")
+                continue
+            #send over one line of the JSON along with the print message for the server
+            elif lastcmnd == "list":
+                ###MAKE A FUNC THAT RETURNS THE PROPER SEND MESSAGE AND TAKES A LINE OUT OF THE LIST (MAYBE POP)
+                pass     
+   
+        lastcmnd = commands[0] #getting the last command so more can check that list was called last
+
+        if len(commands)==3:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2])
             result = processdata.calcStat(filtereddata, commands[0])
-            # need case for list
-            print(f'{commands[0]} requested - {len(filtereddata)} records')
+            if commands[0] == "list":
+                lastjson = filtereddata #store this for more command
+                socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
+                print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt
+            else:
+                print(f'{commands[0]} requested - {len(filtereddata)} records')
+                socket.send_string(f'success, {commands[0]}, {result}')
+                print(f'SENT: success, {commands[0]}, {result}')
         else:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2], commands[3])
-            resurlt = processdata.calcStat(filtereddata, commands[0])
-            # need case for list
-            print(f'{commands[0]} requested - {len(filtereddata)} records')
-
+            result = processdata.calcStat(filtereddata, commands[0])
+            if commands[0] == "list":
+                lastjson = filtereddata #store this for more command
+                socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
+                print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt
+            else:
+                print(f'{commands[0]} requested - {len(filtereddata)} records')
+                socket.send_string(f'success, {commands[0]}, {result}')
+                print(f'SENT: success, {commands[0]}, {result}')
 
     except KeyboardInterrupt:
         print("Goodbye")
