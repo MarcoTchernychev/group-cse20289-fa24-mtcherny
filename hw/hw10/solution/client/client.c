@@ -11,7 +11,7 @@
 #include <ctype.h>
 
 #define MAX_MSG_LEN 64 
-#define MAX_REPONSE 600
+#define MAX_RESPONSE 600
 
 int main(int argc, char *argv[]) {
 	
@@ -47,11 +47,11 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-	//variables to store 
+	//variables to store sent and received messages
 	char response[MAX_RESPONSE];
 	char msg[MAX_MSG_LEN];
 	
-	//variables for
+	//variables for determining if input message has proper number of fields
 	char *token;
 	char temp[MAX_MSG_LEN];
 	const char *delim = ", ";
