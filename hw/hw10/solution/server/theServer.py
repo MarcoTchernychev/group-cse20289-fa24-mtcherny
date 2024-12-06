@@ -31,6 +31,8 @@ def checkCmnds(message):
         stat = commands[0]
         date = commands[1]
         time = commands[2]
+        if len(time)==1: #single digit times should have a 0 in front of them
+            time="0"+time
         if not re.fullmatch(validStat, stat):
             print(f"error - invalid stat command {commands[0]}")
             socket.send_string(f"failure, invalid stat command {commands[0]}")
@@ -52,6 +54,8 @@ def checkCmnds(message):
         date = commands[1]
         time = commands[2]
         filter = commands[3]
+        if len(time)==1: #single digit times should have a 0 in front of them
+            time="0"+time
         if not re.fullmatch(validStat, stat):
             print(f"error - invalid stat command {commands[0]}")
             socket.send_string(f"failure, invalid stat command {commands[0]}")
@@ -87,7 +91,9 @@ def more(json):
         socket.send_string("failure, no more data to send")
         print("SENT: failure, no more data to send")
     else:
-        line = json.pop[0] #pop one line of the json
+        print(json)#test
+        print(type(json))#test
+        line = json.pop(0) #pop one line of the json
         returnstr = '' #holder for the line of data
         for field, value in line.items():
             returnstr += f'{field}, {value}, ' #appending the field and value to the line
@@ -119,7 +125,7 @@ while True:
     try:
         print("Waiting for a new command") #wait for next command from client
         message = socket.recv() #recieve command
-        message = message.decode('utf-8')
+        message = message.decode('utf-8').strip()
         print(f"RCVD: {message}") #notify user that command was recieved
         if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
             continue
@@ -138,10 +144,13 @@ while True:
                 print("SENT: failure, didn't do list yet")
                 continue
             elif lastcmnd == "list":
-                more(lastjson) #a func that sends the proper line and shortens the json then prints what it sent, alss checks that more command is valid
+                more(lastjson) #a func that sends the proper line and shortens the json then prints what it sent, also checks that more command is valid
                 continue     
    
         lastcmnd = commands[0] #getting the last command so more can check that list was called last
+
+        if len(commands[2])==1: #single digit times should have a 0 in front of them
+            commands[2]="0"+commands[2]
 
         if len(commands)==3:
             filtereddata = processdata.filter(data, commands[1], commands[2])
