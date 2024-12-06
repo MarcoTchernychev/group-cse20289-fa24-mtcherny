@@ -75,8 +75,12 @@ int main(int argc, char *argv[]) {
 				count++;
 			}
 			if (count != 4) {
+<<<<<<< HEAD
+				printf("Message formatted incorrectly")
+=======
 				printf("Message formatted incorrectly\n");
 				continue;
+>>>>>>> ef34cedc7eccadd518fd74f74258f684489bc714
 			}
 		}
 
