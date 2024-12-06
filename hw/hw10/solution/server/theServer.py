@@ -17,6 +17,7 @@ def checkCmnds(message):
     validDate = re.compile(r'^(?:\*|(?:20(1[0-9]|2[0-4])|\*)-(?:0[1-9]|1[0-2]|\*)-(?:0[1-9]|[12][0-9]|3[01]|\*))$')
     validTime = re.compile(r'^(?:\*|0[0-9]|1[0-9]|2[0-3])$')
     validFilter = re.compile(r'^(iface=(eth0|wlan0);dir=(downlink|uplink);type=iperf)$')
+    
     commands = message.split(', ')
     if len(commands) == 1:
         if commands[0] == "exit" or commands[0] == "more":
@@ -119,7 +120,7 @@ while True:
         print("Waiting for a new command") #wait for next command from client
         message = socket.recv() #recieve command
         print(f"RCVD: {message}") #notify user that command was recieved
-        if checkCmnds(message) == False: #check that command is valid - if it isn't then notify user and continue
+        if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
             continue
         
         data = processdata.fetch(url) #get the data
