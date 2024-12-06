@@ -7,6 +7,7 @@ import processdata
 import re
 import sys
 import zmq
+import time
 
 #INPUT: message as a string
 #OUTPUT: true or false, and prints if bad
@@ -93,6 +94,11 @@ def more(json):
         socket.send_string(f'success, {len(json)}, {returnstr}') #sending the string
         print(f'SENT: success, {len(json)}, {returnstr}') #printing success
 
+#check for correct number of command line args
+if len(sys.argv)!=3:
+    print("incorrect usage, run as: python3 theServer.py <url> <server port>")
+    exit()
+
 url = sys.argv[1]
 serverPort = int(sys.argv[2]) #40645
 
@@ -137,7 +143,7 @@ while True:
 
         if len(commands)==3:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2])
-            if filtereddata == []:
+            if filtereddata == []: #check if filtered data is empty becuase then stats will get an error
                 socket.send_string("filtered out all data, count is 0")
                 print("SENT: filtered out all data, count is 0")
                 continue
@@ -152,7 +158,7 @@ while True:
                 print(f'SENT: success, {commands[0]}, {result}')
         else:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2], commands[3])
-            if filtereddata == []:
+            if filtereddata == []: #check if filtered data is empty becuase then stats will get an error
                 socket.send_string("filtered out all data, count is 0")
                 print("SENT: filtered out all data, count is 0")
                 continue
@@ -167,5 +173,6 @@ while True:
                 print(f'SENT: success, {commands[0]}, {result}')
 
     except KeyboardInterrupt:
-        print("Goodbye")
+        print("\nGoodbye")
+        time.sleep(1)
         exit()
