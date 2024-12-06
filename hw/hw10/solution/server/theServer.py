@@ -21,28 +21,28 @@ def checkCmnds(message):
         if commands[0] == "exit" or commands[0] == "more":
             return True
         else:
-            print("error - unrecognized argument")
-            socket.send_string("failure, unrecognized argument")
-            print("SENT: failure, unrecognized argument")
+            print("error - unrecognized single command")
+            socket.send_string("failure, unrecognized single command")
+            print("SENT: failure, unrecognized single command")
             return False
     elif len(commands) == 3:
         stat = commands[0]
         date = commands[1]
         time = commands[2]
         if not re.fullmatch(validStat, stat):
-            print("error - invalid stat argument")
-            socket.send_string("failure, invalid stat argument")
-            print("SENT: failure, invalid stat argument")
+            print("error - invalid stat command")
+            socket.send_string("failure, invalid stat command")
+            print("SENT: failure, invalid stat command")
             return False
         if not re.fullmatch(validDate, date):
-            print("error - invalid date argument")
-            socket.send_string("failure, invalid date argument")
-            print("SENT: failure, invalid date argument")
+            print("error - invalid date command")
+            socket.send_string("failure, invalid date command")
+            print("SENT: failure, invalid date command")
             return False
         if not re.fullmatch(validTime, time):
-            print("error - invalid time argument")
-            socket.send_string("failure, invalid time argument")
-            print("SENT: failure, invalid time argument")
+            print("error - invalid time command")
+            socket.send_string("failure, invalid time command")
+            print("SENT: failure, invalid time command")
             return False
         return True
     elif len(commands) == 4:
@@ -51,42 +51,47 @@ def checkCmnds(message):
         time = commands[2]
         filter = commands[3]
         if not re.fullmatch(validStat, stat):
-            print("error - invalid stat argument")
-            socket.send_string("failure, invalid stat argument")
-            print("SENT: failure, invalid stat argument")
+            print("error - invalid stat command")
+            socket.send_string("failure, invalid stat command")
+            print("SENT: failure, invalid stat command")
             return False
         if not re.fullmatch(validDate, date):
-            print("error - invalid date argument")
-            socket.send_string("failure, invalid date argument")
-            print("SENT: failure, invalid date argument")
+            print("error - invalid date command")
+            socket.send_string("failure, invalid date command")
+            print("SENT: failure, invalid date command")
             return False
         if not re.fullmatch(validTime, time):
-            print("error - invalid time argument")
-            socket.send_string("failure, invalid time argument")
-            print("SENT: failure, invalid time argument")
+            print("error - invalid time command")
+            socket.send_string("failure, invalid time command")
+            print("SENT: failure, invalid time command")
             return False
         if not re.fullmatch(validFilter, filter):
-            print("error - invalid filter argument")
-            socket.send_string("failure, invalid filter argument")
-            print("SENT: failure, invalid filter argument")
+            print("error - invalid filter command")
+            socket.send_string("failure, invalid filter command")
+            print("SENT: failure, invalid filter command")
             return False
         return True
     else:
-        print("error - not enough arguments")
-        socket.send_string("failure, not enough arguments")
-        print("SENT: failure, not enough arguments")
+        print("error - wrong number of commands")
+        socket.send_string("failure, wrong number of commands")
+        print("SENT: failure, wrong number of commands")
         return False
 
 #INPUT: JSON file of the list
-#OUTPUT: content of one line of the JSON file formatted as: success, #of lines remaining, key (eg. "timestamp"), value (eg. "the actual timestamp"), ...
+#OUTPUT: none, sends appropiate message and prints that it sent
 #PURPOSE: check that there are lines remaining to do "more" on, and if there are, send the data... otherwise send a failure
 def more(json):
     if len(json) == 0: #if no data left to do more on
         socket.send_string("failure, no more data to send")
         print("SENT: failure, no more data to send")
     else:
-        line = json.pop[0]
-
+        line = json.pop[0] #pop one line of the json
+        returnstr = '' #holder for the line of data
+        for field, value in line.items():
+            returnstr += f'{field}, {value}, ' #appending the field and value to the line
+        returnstr = returnstr[0:-2] #getting rid of trailing ', '
+        socket.send_string(f'success, {len(json)}, {returnstr}') #sending the string
+        print(f'SENT: success, {len(json)}, {returnstr}') #printing success
 
 url = sys.argv[1]
 serverPort = int(sys.argv[2]) #40645
@@ -124,10 +129,9 @@ while True:
                 socket.send_string("failure, didn't do list yet")
                 print("SENT: failure, didn't do list yet")
                 continue
-            #send over one line of the JSON along with the print message for the server
             elif lastcmnd == "list":
-                ###MAKE A FUNC THAT RETURNS THE PROPER SEND MESSAGE AND TAKES A LINE OUT OF THE LIST (MAYBE POP)
-                pass     
+                more(lastjson) #a func that sends the proper line and shortens the json then prints what it sent, alss checks that more command is valid
+                continue     
    
         lastcmnd = commands[0] #getting the last command so more can check that list was called last
 
