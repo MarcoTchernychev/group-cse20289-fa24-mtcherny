@@ -10,7 +10,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_MSG_LEN 256
+#define MAX_MSG_LEN 64 
+#define MAX_REPONSE 600
 
 int main(int argc, char *argv[]) {
 	
@@ -18,6 +19,7 @@ int main(int argc, char *argv[]) {
 	int portnum;
 	int rc;
 	
+	//check that the hostname and port number are properly entered as command line arguments
 	if (argc == 3) {
 		strcpy(hostname, argv[1]);
 		for (int i = 0; argv[2][i] != '\0'; i++) {
@@ -37,6 +39,7 @@ int main(int argc, char *argv[]) {
 	sprintf(pszRequest, "tcp://%s:%d", hostname, portnum);
 	rc = zmq_connect(requester, pszRequest);
 
+	//check return code to see if connection to port was successful
 	if (rc == 0) 
 		printf("\tSuccessfully connected on port %d\n", portnum);
 	else {
@@ -44,9 +47,11 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-	char response[MAX_MSG_LEN];
+	//variables to store 
+	char response[MAX_RESPONSE];
 	char msg[MAX_MSG_LEN];
 	
+	//variables for
 	char *token;
 	char temp[MAX_MSG_LEN];
 	const char *delim = ", ";
@@ -89,7 +94,7 @@ int main(int argc, char *argv[]) {
 	
 		//wait for response and then display it
 		memset(response, 0, MAX_MSG_LEN);
-		if (zmq_recv(requester, response, MAX_MSG_LEN, 0) == -1) {
+		if (zmq_recv(requester, response, MAX_RESPONSE, 0) == -1) {
 			printf("Failed to receive response\n");
 			continue;
 		}
