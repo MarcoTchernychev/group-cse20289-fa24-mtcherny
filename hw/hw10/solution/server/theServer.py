@@ -22,28 +22,28 @@ def checkCmnds(message):
         if commands[0] == "exit" or commands[0] == "more":
             return True
         else:
-            print("error - unrecognized single command")
-            socket.send_string("failure, unrecognized single command")
-            print("SENT: failure, unrecognized single command")
+            print(f'error - unrecognized single command {commands[0]}')
+            socket.send_string(f'failure, unrecognized single command {commands[0]}')
+            print(f'SENT: failure, unrecognized single command {commands[0]}')
             return False
     elif len(commands) == 3:
         stat = commands[0]
         date = commands[1]
         time = commands[2]
         if not re.fullmatch(validStat, stat):
-            print("error - invalid stat command")
-            socket.send_string("failure, invalid stat command")
-            print("SENT: failure, invalid stat command")
+            print(f"error - invalid stat command {commands[0]}")
+            socket.send_string(f"failure, invalid stat command {commands[0]}")
+            print(f"SENT: failure, invalid stat command {commands[0]}")
             return False
         if not re.fullmatch(validDate, date):
-            print("error - invalid date command")
-            socket.send_string("failure, invalid date command")
-            print("SENT: failure, invalid date command")
+            print(f"error - invalid date command {commands[1]}")
+            socket.send_string(f"failure, invalid date command {commands[1]}")
+            print(f"SENT: failure, invalid date command {commands[1]}")
             return False
         if not re.fullmatch(validTime, time):
-            print("error - invalid time command")
-            socket.send_string("failure, invalid time command")
-            print("SENT: failure, invalid time command")
+            print(f"error - invalid time command {commands[2]}")
+            socket.send_string(f"failure, invalid time command {commands[2]}")
+            print(f"SENT: failure, invalid time command {commands[2]}")
             return False
         return True
     elif len(commands) == 4:
@@ -52,24 +52,24 @@ def checkCmnds(message):
         time = commands[2]
         filter = commands[3]
         if not re.fullmatch(validStat, stat):
-            print("error - invalid stat command")
-            socket.send_string("failure, invalid stat command")
-            print("SENT: failure, invalid stat command")
+            print(f"error - invalid stat command {commands[0]}")
+            socket.send_string(f"failure, invalid stat command {commands[0]}")
+            print(f"SENT: failure, invalid stat command {commands[0]}")
             return False
         if not re.fullmatch(validDate, date):
-            print("error - invalid date command")
-            socket.send_string("failure, invalid date command")
-            print("SENT: failure, invalid date command")
+            print(f"error - invalid date command {commands[1]}")
+            socket.send_string(f"failure, invalid date command {commands[1]}")
+            print(f"SENT: failure, invalid date command {commands[1]}")
             return False
         if not re.fullmatch(validTime, time):
-            print("error - invalid time command")
-            socket.send_string("failure, invalid time command")
-            print("SENT: failure, invalid time command")
+            print(f"error - invalid time command {commands[2]}")
+            socket.send_string(f"failure, invalid time command {commands[2]}")
+            print(f"SENT: failure, invalid time command {commands[2]}")
             return False
         if not re.fullmatch(validFilter, filter):
-            print("error - invalid filter command")
-            socket.send_string("failure, invalid filter command")
-            print("SENT: failure, invalid filter command")
+            print(f"error - invalid filter command {commands[3]}")
+            socket.send_string(f"failure, invalid filter command {commands[3]}")
+            print(f"SENT: failure, invalid filter command {commands[3]}")
             return False
         return True
     else:
