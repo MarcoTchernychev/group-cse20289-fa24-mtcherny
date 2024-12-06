@@ -119,6 +119,7 @@ while True:
     try:
         print("Waiting for a new command") #wait for next command from client
         message = socket.recv() #recieve command
+        message = message.decode('utf-8')
         print(f"RCVD: {message}") #notify user that command was recieved
         if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
             continue
@@ -143,7 +144,7 @@ while True:
         lastcmnd = commands[0] #getting the last command so more can check that list was called last
 
         if len(commands)==3:
-            filtereddata = processdata.filter(commands[0], commands[1], commands[2])
+            filtereddata = processdata.filter(data, commands[1], commands[2])
             if filtereddata == []: #check if filtered data is empty becuase then stats will get an error
                 socket.send_string("filtered out all data, count is 0")
                 print("SENT: filtered out all data, count is 0")
@@ -158,7 +159,7 @@ while True:
                 socket.send_string(f'success, {commands[0]}, {result}')
                 print(f'SENT: success, {commands[0]}, {result}')
         else:
-            filtereddata = processdata.filter(commands[0], commands[1], commands[2], commands[3])
+            filtereddata = processdata.filter(data, commands[1], commands[2], commands[3])
             if filtereddata == []: #check if filtered data is empty becuase then stats will get an error
                 socket.send_string("filtered out all data, count is 0")
                 print("SENT: filtered out all data, count is 0")

@@ -31,7 +31,10 @@ def filter(json, date, time, field="iface=eth0;dir=downlink;type=iperf"):
     
     for entry in json:
         #find date and time data within curr dictionary
-        datePart, timePart = entry["timestamp"].split("T");
+        #print(json)#test
+        #print(type(entry)) #test
+        #print(entry) #test
+        datePart, timePart = entry["timestamp"].split("T")
         curYear, curMon, curDay = datePart.split("-")
         curTime = timePart[0:2]
         if (year == "*" or year == curYear) and (mon == "*" or mon == curMon) and (day == "*" or day == curDay) and (time == "*" or time == curTime):
