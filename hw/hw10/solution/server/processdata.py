@@ -31,19 +31,20 @@ def filter(json, date, time, field="iface=eth0;dir=downlink;type=iperf"):
     
     for entry in json:
         #find date and time data within curr dictionary
-        curYear, curMon, curDay = entry["timestamp"].split("-")[0:3]
-        curTime = curDay[4:6]
-        curDay = curDay[0:2]
+        datePart, timePart = entry["timestamp"].split("T");
+        curYear, curMon, curDay = datePart.split("-")
+        curTime = timePart[0:2]
         if (year == "*" or year == curYear) and (mon == "*" or mon == curMon) and (day == "*" or day == curDay) and (time == "*" or time == curTime):
             for f in fields:
-                key, val = f.split("=")
-                if key == "iface":
-                    key = "interface"
-                elif key == "dir":
-                    key = "direction"
-                if entry[key] != val:
-                    add = 0
-                    break
+                if "=" in f:
+                    key, val = f.split("=")
+                    if key == "iface":
+                        key = "interface"
+                    elif key == "dir":
+                        key = "direction"
+                    if entry[key] != val:
+                        add = 0
+                        break
             if add == 1:
                 filteredData.append(entry)
 
@@ -74,7 +75,7 @@ def calcStat(data, stat):
     
 
 #data = fetch("http://ns-mn1.cse.nd.edu/cse20289-fa24/hw03/data-10.json")
-#filtered = filter(data, "*-*-*", "*")
+#filtered = filter(data, "*-05-03", "02", "hey")
 #print(filtered)
 #print(len(filtered))
 
