@@ -137,6 +137,10 @@ while True:
 
         if len(commands)==3:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2])
+            if filtereddata == []:
+                socket.send_string("filtered out all data, count is 0")
+                print("SENT: filtered out all data, count is 0")
+                continue
             result = processdata.calcStat(filtereddata, commands[0])
             if commands[0] == "list":
                 lastjson = filtereddata #store this for more command
@@ -148,6 +152,10 @@ while True:
                 print(f'SENT: success, {commands[0]}, {result}')
         else:
             filtereddata = processdata.filter(commands[0], commands[1], commands[2], commands[3])
+            if filtereddata == []:
+                socket.send_string("filtered out all data, count is 0")
+                print("SENT: filtered out all data, count is 0")
+                continue
             result = processdata.calcStat(filtereddata, commands[0])
             if commands[0] == "list":
                 lastjson = filtereddata #store this for more command
