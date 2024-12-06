@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 	
 	while(1) {
 		//get input from user
-		printf("Waiting for message (stat, date, time, filter)/list/more:\n");	
+		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");	
 		fgets(msg, MAX_MSG_LEN, stdin);
 		//remove trailing newline
 		msg[strlen(msg)-1] = '\0';
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		//check if input is valid (valid # of args/csv type format)
-		if ((strcmp(msg, "list") != 0) && (strcmp(msg, "more") != 0)) {
+		if ((strcmp(msg, "more") != 0)) {
 			//use strtok to see how many fields were entered seperated by commas (proper format)
 			strcpy(temp, msg);
 			token = strtok(temp, delim);
@@ -74,13 +74,9 @@ int main(int argc, char *argv[]) {
 				token = strtok(NULL, delim);
 				count++;
 			}
-			if (count != 4) {
-<<<<<<< HEAD
-				printf("Message formatted incorrectly")
-=======
+			if ((count != 3) && (count != 4)) {
 				printf("Message formatted incorrectly\n");
 				continue;
->>>>>>> ef34cedc7eccadd518fd74f74258f684489bc714
 			}
 		}
 
