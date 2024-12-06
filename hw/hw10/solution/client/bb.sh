@@ -9,5 +9,5 @@
 set -x
 
 if [$1 != -query ]:
-    
+	   
 fi
