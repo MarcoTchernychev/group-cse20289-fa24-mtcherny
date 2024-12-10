@@ -31,7 +31,7 @@ def checkCmnds(message):
         stat = commands[0]
         date = commands[1]
         time = commands[2]
-        if len(time)==1: #single digit times should have a 0 in front of them
+        if len(time)==1 and time!='*': #single digit times should have a 0 in front of them
             time="0"+time
         if not re.fullmatch(validStat, stat):
             print(f"error - invalid stat command {commands[0]}")
@@ -54,7 +54,7 @@ def checkCmnds(message):
         date = commands[1]
         time = commands[2]
         filter = commands[3]
-        if len(time)==1: #single digit times should have a 0 in front of them
+        if len(time)==1 and time!='*': #single digit times should have a 0 in front of them
             time="0"+time
         if not re.fullmatch(validStat, stat):
             print(f"error - invalid stat command {commands[0]}")
@@ -107,7 +107,11 @@ if len(sys.argv)!=3:
     exit()
 
 url = sys.argv[1]
-serverPort = int(sys.argv[2]) #40645
+try:
+    serverPort = int(sys.argv[2]) #40645
+except:
+    print("make sure the port is the 2nd argument")
+    exit()
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
@@ -126,7 +130,7 @@ while True:
         print("Waiting for a new command") #wait for next command from client
         message = socket.recv() #recieve command
         message = message.decode('utf-8').strip()
-        print(f"RCVD: {message}") #notify user that command was recieved
+        print(f"RCVD: {repr(message)}") #notify user that command was recieved
         if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
             continue
         
@@ -149,7 +153,7 @@ while True:
    
         lastcmnd = commands[0] #getting the last command so more can check that list was called last
 
-        if len(commands[2])==1: #single digit times should have a 0 in front of them
+        if len(commands[2])==1 and commands[2]!='*': #single digit times should have a 0 in front of them
             commands[2]="0"+commands[2]
 
         if len(commands)==3:

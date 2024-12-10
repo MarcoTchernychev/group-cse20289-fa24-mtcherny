@@ -53,16 +53,24 @@ int main(int argc, char *argv[]) {
 	
 	//variables for determining if input message has proper number of fields
 	char *token;
-	char temp[MAX_MSG_LEN];
 	const char *delim = ", ";
 	int count;
 	
 	while(1) {
+		#include <unistd.h>
+		sleep(1);
+		//printf("STARTING LOOP\n");
 		//get input from user
-		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");	
-		fgets(msg, MAX_MSG_LEN, stdin);
+		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");
+		memset(msg, 0, MAX_MSG_LEN);
+		while (fgets(msg, MAX_MSG_LEN, stdin) == NULL);
+		printf("COLLECTING INPUT: \'%s\'\n", msg);
+
 		//remove trailing newline
-		msg[strlen(msg)-1] = '\0';
+		char *temp = strchr(msg, '\n');
+		if (temp != 0) *temp = '\0';
+
+		printf("REFORMATED INPUT: \'%s\'\n", msg);
 
 		if (strcmp(msg, "exit") == 0) {
 			zmq_send(requester, msg, strlen(msg), 0);
@@ -70,15 +78,17 @@ int main(int argc, char *argv[]) {
 		}
 
 		//check if input is valid (valid # of args/csv type format)
+		char buffer[BUFSIZ];
 		if ((strcmp(msg, "more") != 0)) {
 			//use strtok to see how many fields were entered seperated by commas (proper format)
-			strcpy(temp, msg);
-			token = strtok(temp, delim);
+			strcpy(buffer, msg);
+			token = strtok(buffer, delim);
 			count = 0;
 			while (token != NULL) {
 				token = strtok(NULL, delim);
 				count++;
 			}
+
 			if ((count != 3) && (count != 4)) {
 				printf("Message formatted incorrectly\n");
 				continue;
@@ -98,8 +108,9 @@ int main(int argc, char *argv[]) {
 			printf("Failed to receive response\n");
 			continue;
 		}
-		printf("Received: %s\n", response);	
-	
+		printf("Received: %s\n", response);
+		int c;
+		while ((c = getchar()) != '\n' && c != EOF);
 	}
 
 	zmq_close(requester);
