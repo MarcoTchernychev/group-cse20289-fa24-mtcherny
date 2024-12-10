@@ -29,6 +29,9 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		portnum = atoi(argv[2]);
+	} else {
+		printf("Usage: ./client hostname portnumber\n");
+		exit(-2);
 	}
 	
 	//connect to port via zmq
@@ -58,9 +61,12 @@ int main(int argc, char *argv[]) {
 	int count;
 	
 	while(1) {
+		#include <unistd.h>
+		sleep(1);
 		//get input from user
 		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");	
-		fgets(msg, MAX_MSG_LEN, stdin);
+		//memset(msg, 0, MAX_MSG_LEN);
+		while (fgets(msg, MAX_MSG_LEN, stdin) == NULL);
 		//remove trailing newline
 		msg[strlen(msg)-1] = '\0';
 
