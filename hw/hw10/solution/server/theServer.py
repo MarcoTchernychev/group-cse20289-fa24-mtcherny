@@ -13,7 +13,7 @@ import time
 #OUTPUT: true or false, and prints if bad
 #PURPOSE: takes in a message from the client, if it's invalid it prints an error and sends it to the client, then prnts out that the error was sent to the client
 def checkCmnds(message):
-    validStat = re.compile(r'^(count|mean|median|min|max|stddev|list)$')
+    validStat = re.compile(r'^(count|mean|median|min|max|stddev|list|list-more)$')
     validDate = re.compile(r'^(?:\*|(?:20(1[0-9]|2[0-4])|\*)-(?:0[1-9]|1[0-2]|\*)-(?:0[1-9]|[12][0-9]|3[01]|\*))$')
     validTime = re.compile(r'^(?:\*|0[0-9]|1[0-9]|2[0-3])$')
     validFilter = re.compile(r'^(iface=(eth0|wlan0);dir=(downlink|uplink);type=iperf)$')
@@ -91,8 +91,8 @@ def more(json):
         socket.send_string("failure, no more data to send")
         print("SENT: failure, no more data to send")
     else:
-        print(json)#test
-        print(type(json))#test
+        #print(json)#test
+        #print(type(json))#test
         line = json.pop(0) #pop one line of the json
         returnstr = '' #holder for the line of data
         for field, value in line.items():
@@ -130,7 +130,7 @@ while True:
         print("Waiting for a new command") #wait for next command from client
         message = socket.recv() #recieve command
         message = message.decode('utf-8').strip()
-        print(f"RCVD: {repr(message)}") #notify user that command was recieved
+        print(f"RCVD: {message}") #notify user that command was recieved
         if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
             continue
         
@@ -150,7 +150,7 @@ while True:
             elif lastcmnd == "list":
                 more(lastjson) #a func that sends the proper line and shortens the json then prints what it sent, also checks that more command is valid
                 continue     
-   
+        
         lastcmnd = commands[0] #getting the last command so more can check that list was called last
 
         if len(commands[2])==1 and commands[2]!='*': #single digit times should have a 0 in front of them
@@ -163,7 +163,10 @@ while True:
                 print("SENT: filtered out all data, count is 0")
                 continue
             result = processdata.calcStat(filtereddata, commands[0])
-            if commands[0] == "list":
+            if commands[0] == "list-more": #list-more functionality for bbf
+                socket.send_string(f'success, {len(filtereddata)}, {filtereddata}') #send the count for the filtered data and the data
+                print(f'SENT: success, {filtereddata}') #and make the print stmnt
+            elif commands[0] == "list":
                 lastjson = filtereddata #store this for more command
                 socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
                 print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt
@@ -178,7 +181,10 @@ while True:
                 print("SENT: filtered out all data, count is 0")
                 continue
             result = processdata.calcStat(filtereddata, commands[0])
-            if commands[0] == "list":
+            if commands[0] == "list-more": #list-more functionality for bbf
+                socket.send_string(f'success, {len(filtereddata)}, {filtereddata}') #send the count for the filtered data and the data
+                print(f'SENT: success, {filtereddata}') #and make the print stmnt
+            elif commands[0] == "list":
                 lastjson = filtereddata #store this for more command
                 socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
                 print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt

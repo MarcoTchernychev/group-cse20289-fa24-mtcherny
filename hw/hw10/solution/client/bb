@@ -8,44 +8,41 @@
 
 #set -x
 
-#If time is passed as *, then the shell expands * into the whole working directory, so we have to account for that.
-#We can account for that by taking every command line arg AFTER the date, and comparing that to ls. 
-#echo "All arguments: $@"
-#start=("${@:3}")
-#slice=${start[@]} #take a slice from the 3rd argument onwards
-#echo "Sliced arguments: $slice"
-#dir=$(ls)
-#echo dir: $dir
-#echo slice: $slice
-#if [[ $slice == $ls ]]; then
-#    echo "success"
-#else
-#    echo "failure"
-#fi
-
 source .config #EXE, HOST, and PORT are vars
-make clean
+make clean > /dev/null 2>&1
 make > /dev/null 2>&1 #make the c script
+
+#echo $@ #test
 
 if [ $1 != "-query" ] && [ "$#" -eq 3 ]; then
     stat=$1
 	ymd=$2
     hour=$3
-    input="$stat, $ymd, $hour
-    exit\n"
-    #need to figure out how to stop infinte loop
+    if [ "$hour" == "\*" ]; then
+        input="$stat, $ymd, *\nexit\n"
+    else
+        input="$stat, $ymd, $hour\nexit\n"
+    fi
     echo -e "$input" | ./$EXE $HOST $PORT  
+    echo "Sending message: exit"
+    echo "Goodbye"
 elif [ $1 == "-query" ] && [ "$#" -eq 5 ]; then
     filter=$2
     stat=$3
 	ymd=$4
     hour=$5
-    input="$stat, $ymd, $hour, $filter"
-    #just do same code used in first if
+    if [ "$hour" == "\*" ]; then
+        input="$stat, $ymd, *, $filter\nexit\n"
+    else
+        input="$stat, $ymd, $hour, $filter\nexit\n"
+    fi
+    echo -e "$input" | ./$EXE $HOST $PORT
+    echo "Sending message: exit"
+    echo "Goodbye"
 else
     echo "invalid call"
 fi
 
-make clean
+make clean > /dev/null 2>&1
 
 
