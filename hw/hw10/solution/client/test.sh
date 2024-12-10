@@ -5,7 +5,7 @@
 #mtcherny@nd.edu
 
 #!/bin/bash
-set -x
+#set -x
 
 #first, make c client using Makefile
 make clean > /dev/null 2>&1

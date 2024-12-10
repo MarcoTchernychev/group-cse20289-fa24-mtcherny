@@ -63,11 +63,6 @@ int main(int argc, char *argv[]) {
 		#include <unistd.h>
 		sleep(1);
 		//printf("STARTING LOOP\n");
-		//get input from user
-		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");
-		memset(msg, 0, MAX_MSG_LEN);
-		while (fgets(msg, MAX_MSG_LEN, stdin) == NULL);
-		printf("COLLECTING INPUT: \'%s\'\n", msg);
 
 		//get input from user
 		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");	
@@ -77,7 +72,6 @@ int main(int argc, char *argv[]) {
 		char *temp = strchr(msg, '\n');
 		if (temp != 0) *temp = '\0';
 
-		printf("REFORMATED INPUT: \'%s\'\n", msg);
 
 		if (strcmp(msg, "exit") == 0) {
 			zmq_send(requester, msg, strlen(msg), 0);
@@ -116,8 +110,6 @@ int main(int argc, char *argv[]) {
 			continue;
 		}
 		printf("Received: %s\n", response);
-		int c;
-		while ((c = getchar()) != '\n' && c != EOF);
 	}
 
 	zmq_close(requester);
