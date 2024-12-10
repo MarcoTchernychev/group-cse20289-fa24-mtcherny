@@ -13,7 +13,7 @@ import time
 #OUTPUT: true or false, and prints if bad
 #PURPOSE: takes in a message from the client, if it's invalid it prints an error and sends it to the client, then prnts out that the error was sent to the client
 def checkCmnds(message):
-    validStat = re.compile(r'^(count|mean|median|min|max|stddev|list|list-more)$')
+    validStat = re.compile(r'^(count|mean|median|min|max|stddev|list)$')
     validDate = re.compile(r'^(?:\*|(?:20(1[0-9]|2[0-4])|\*)-(?:0[1-9]|1[0-2]|\*)-(?:0[1-9]|[12][0-9]|3[01]|\*))$')
     validTime = re.compile(r'^(?:\*|0[0-9]|1[0-9]|2[0-3])$')
     validFilter = re.compile(r'^(iface=(eth0|wlan0);dir=(downlink|uplink);type=iperf)$')
@@ -163,10 +163,7 @@ while True:
                 print("SENT: filtered out all data, count is 0")
                 continue
             result = processdata.calcStat(filtereddata, commands[0])
-            if commands[0] == "list-more": #list-more functionality for bbf
-                socket.send_string(f'success, {len(filtereddata)}, {filtereddata}') #send the count for the filtered data and the data
-                print(f'SENT: success, {filtereddata}') #and make the print stmnt
-            elif commands[0] == "list":
+            if commands[0] == "list":
                 lastjson = filtereddata #store this for more command
                 socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
                 print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt
@@ -181,10 +178,7 @@ while True:
                 print("SENT: filtered out all data, count is 0")
                 continue
             result = processdata.calcStat(filtereddata, commands[0])
-            if commands[0] == "list-more": #list-more functionality for bbf
-                socket.send_string(f'success, {len(filtereddata)}, {filtereddata}') #send the count for the filtered data and the data
-                print(f'SENT: success, {filtereddata}') #and make the print stmnt
-            elif commands[0] == "list":
+            if commands[0] == "list":
                 lastjson = filtereddata #store this for more command
                 socket.send_string(f'success, {len(filtereddata)}') #send the count for the filtered data
                 print(f'SENT: success, {len(filtereddata)}') #and make the print stmnt

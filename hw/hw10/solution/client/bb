@@ -14,7 +14,7 @@ make > /dev/null 2>&1 #make the c script
 
 #echo $@ #test
 
-if [ $1 != "-query" ] && [ "$#" -eq 3 ]; then
+if [ -n "$1" ] && [ $1 != "-query" ] && [ "$#" -eq 3 ]; then
     stat=$1
 	ymd=$2
     hour=$3
@@ -26,7 +26,7 @@ if [ $1 != "-query" ] && [ "$#" -eq 3 ]; then
     echo -e "$input" | ./$EXE $HOST $PORT  
     echo "Sending message: exit"
     echo "Goodbye"
-elif [ $1 == "-query" ] && [ "$#" -eq 5 ]; then
+elif [ -n "$1" ] && [ $1 == "-query" ] && [ "$#" -eq 5 ]; then
     filter=$2
     stat=$3
 	ymd=$4

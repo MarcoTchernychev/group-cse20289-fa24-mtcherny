@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 		}
 	
 		//wait for response and then display it
-		memset(response, 0, MAX_MSG_LEN);
+		memset(response, 0, MAX_RESPONSE);
 		if (zmq_recv(requester, response, MAX_RESPONSE, 0) == -1) {
 			printf("Failed to receive response\n");
 			continue;
