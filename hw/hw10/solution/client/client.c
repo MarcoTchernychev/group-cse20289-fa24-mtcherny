@@ -18,9 +18,10 @@ int main(int argc, char *argv[]) {
 	char hostname[20];
 	int portnum;
 	int rc;
+	char nice[20];
 	
 	//check that the hostname and port number are properly entered as command line arguments
-	if (argc == 3) {
+	if (argc == 3 || argc == 4) {
 		strcpy(hostname, argv[1]);
 		for (int i = 0; argv[2][i] != '\0'; i++) {
 			if (!isdigit(argv[2][i])) {
@@ -29,8 +30,15 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		portnum = atoi(argv[2]);
+		if (argc==4){
+			strcpy(nice, argv[3]);
+			if(strcmp(nice, "-nice")!=0){
+				printf("Error: make sure optional fourth argument is -nice\n");
+				exit(-1);
+			}
+		}
 	} else {
-		printf("Usage: ./client hostname portnumber\n");
+		printf("Usage: ./client hostname portnumber {-nice}\n");
 		exit(-2);
 	}
 	
