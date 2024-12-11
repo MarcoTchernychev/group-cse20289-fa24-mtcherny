@@ -65,8 +65,9 @@ int main(int argc, char *argv[]) {
 	char msg[MAX_MSG_LEN];
 	char temp[MAX_MSG_LEN];
 	//for listmore functionality
-	char list[MAX_MSG_LEN] = "list, ";
+	char list[MAX_MSG_LEN] = "nicelist, ";
 	char *rest;
+	int loop;
 	
 	//variables for determining if input message has proper number of fields
 	char *token;
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 		//get input from user
 		printf("Waiting for message (stat, date, time, {filter})/more/exit:\n");	
-		//memset(msg, 0, MAX_MSG_LEN);
+		memset(msg, 0, MAX_MSG_LEN);
 		while (fgets(msg, MAX_MSG_LEN, stdin) == NULL);
 		//remove trailing newline
 		char *temp = strchr(msg, '\n');
@@ -94,6 +95,7 @@ int main(int argc, char *argv[]) {
 
 		//check if input is valid (valid # of args/csv type format)
 		char buffer[BUFSIZ];
+		memset(buffer, 0, BUFSIZ);
 		if ((strcmp(msg, "more") != 0)) {
 			//use strtok to see how many fields were entered seperated by commas (proper format)
 			strcpy(buffer, msg);
@@ -110,12 +112,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		
-		//if nice envoked, prepend "nice" to send to python server
-		if (niceBool) {
-			strcpy(temp, msg);
-			strcpy(msg, "nice");
-			strcat(msg, temp);
-		}
 
 		//for bbf, batch cmd of listmore to execute list and subsequent amount of mores
 		if (strncmp(msg, "listmore", strlen("listmore")) == 0) {
@@ -131,10 +127,14 @@ int main(int argc, char *argv[]) {
 				printf("Failed to receive response\n");
 				continue;
 			}
+			printf("%s\n",response);
 			rest = response + 9;
+			loop = atoi(rest);
 			//call more corresponding to amt of records found in list
-			for (int i = 0; i < atoi(rest); i++) {
-				if (zmq_send(requester, "more", strlen("more"), 0) == -1) {
+			//printf("%d records to loop\n", atoi(rest));
+			for (int i = 0; i < loop; i++) {
+				//printf("looping\n");
+				if (zmq_send(requester, "nicemore", strlen("nicemore"), 0) == -1) {
 					printf("Failed to send message\n");
 					continue;
 				}
@@ -148,6 +148,12 @@ int main(int argc, char *argv[]) {
 			continue;	
 		}
 
+		//if nice envoked, prepend "nice" to send to python server
+		if (niceBool) {
+			strcpy(temp, msg);
+			strcpy(msg, "nice");
+			strcat(msg, temp);
+		}
 
 		//send to python via ZMQ
 		printf("Sending message: %s\n", msg);		

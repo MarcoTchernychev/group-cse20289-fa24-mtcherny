@@ -13,7 +13,7 @@ import json
 #INPUT: message as a string
 #OUTPUT: true or false, and prints if bad
 #PURPOSE: takes in a message from the client, if it's invalid it prints an error and sends it to the client, then prnts out that the error was sent to the client
-def checkCmnds(message, socket):
+def checkCmnds(message):
     validStat = re.compile(r'^(count|mean|median|min|max|stddev|list)$')
     validDate = re.compile(r'^(?:\*|(?:20(1[0-9]|2[0-4])|\*)-(?:0[1-9]|1[0-2]|\*)-(?:0[1-9]|[12][0-9]|3[01]|\*))$')
     validTime = re.compile(r'^(?:\*|0[0-9]|1[0-9]|2[0-3])$')
@@ -87,7 +87,7 @@ def checkCmnds(message, socket):
 #INPUT: JSON file of the list
 #OUTPUT: none, sends appropiate message and prints that it sent
 #PURPOSE: check that there are lines remaining to do "more" on, and if there are, send the data... otherwise send a failure
-def more(json, socket):
+def more(json):
     if len(json) == 0: #if no data left to do more on
         socket.send_string("failure, no more data to send")
         print("SENT: failure, no more data to send")
@@ -103,26 +103,6 @@ def more(json, socket):
         print(f'SENT: success, {len(json)}, {returnstr}') #printing success
 
 def regular():
-    #check for correct number of command line args
-    if len(sys.argv)!=3:
-        print("incorrect usage, run as: python3 theServer.py <url> <server port>")
-        exit()
-
-    url = sys.argv[1]
-    try:
-        serverPort = int(sys.argv[2]) #40645
-    except:
-        print("make sure the port is the 2nd argument")
-        exit()
-
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    try: 
-        socket.bind("tcp://*:" + str(serverPort)) #Binds the socket to a specific address and port. ZeroMQ uses tcp:// for TCP sockets. The * means it will listen on all available network interfaces.
-        print(f'Server started successfully - listening on Port {serverPort}!')
-    except:
-        print(f'Failed to bind on port {serverPort}')
-        exit()
 
     lastcmnd = '' #holder for the last command (if more is called we want to make sure list was the last command)
     lastjson = [] #holder for the last json
@@ -134,9 +114,9 @@ def regular():
             message = message.decode('utf-8').strip()
             print(f"RCVD: {message}") #notify user that command was recieved
             if("nice" in message): #if nice is found in message, start NiceListMore that accounts for nice being in front of every stat.
-                NiceListMore(message, socket, url)
+                NiceListMore(message)
                 exit()
-            if checkCmnds(str(message), socket) == False: #check that command is valid - if it isn't then notify user and continue
+            if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
                 continue
             
             data = processdata.fetch(url) #get the data
@@ -153,7 +133,7 @@ def regular():
                     print("SENT: failure, didn't do list yet")
                     continue
                 elif lastcmnd == "list":
-                    more(lastjson, socket) #a func that sends the proper line and shortens the json then prints what it sent, also checks that more command is valid
+                    more(lastjson) #a func that sends the proper line and shortens the json then prints what it sent, also checks that more command is valid
                     continue     
             
             lastcmnd = commands[0] #getting the last command so more can check that list was called last
@@ -197,14 +177,19 @@ def regular():
             time.sleep(1)
             exit()
 
-def NiceListMore(message, socket, url):
+def NiceListMore(message):
     lastcmnd = '' #holder for the last command (if more is called we want to make sure list was the last command)
     lastjson = [] #holder for the last json
     while True:
         try:
             message = message[4:]
+            if message == "":
+                message = socket.recv() #recieve command
+                message = message.decode('utf-8').strip()
+                continue
+                
             print(f"RCVD: {message}") #notify user that command was recieved
-            if checkCmnds(str(message),socket) == False: #check that command is valid - if it isn't then notify user and continue
+            if checkCmnds(str(message)) == False: #check that command is valid - if it isn't then notify user and continue
                 continue
             
             data = processdata.fetch(url) #get the data
@@ -274,10 +259,31 @@ def NiceListMore(message, socket, url):
             
             print("Waiting for a new command") #wait for next command from client
             message = socket.recv() #recieve command
+            message = message.decode('utf-8').strip()
 
         except KeyboardInterrupt:
             print("\nGoodbye")
             time.sleep(1)
             exit()
 
+#check for correct number of command line args
+if len(sys.argv)!=3:
+    print("incorrect usage, run as: python3 theServer.py <url> <server port>")
+    exit()
+
+url = sys.argv[1]
+try:
+    serverPort = int(sys.argv[2]) #40645
+except:
+    print("make sure the port is the 2nd argument")
+    exit()
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+try: 
+    socket.bind("tcp://*:" + str(serverPort)) #Binds the socket to a specific address and port. ZeroMQ uses tcp:// for TCP sockets. The * means it will listen on all available network interfaces.
+    print(f'Server started successfully - listening on Port {serverPort}!')
+except:
+    print(f'Failed to bind on port {serverPort}')
+    exit()
 regular()
