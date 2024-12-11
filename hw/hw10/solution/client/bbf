@@ -23,7 +23,7 @@ if [ -n "$1" ] && [ $1 != "-query" ] && [ "$#" -eq 3 ]; then
     else
         input="$stat, $ymd, $hour\nexit\n"
     fi
-    echo -e "$input" | ./$EXE $HOST $PORT  
+    echo -e "$input" | ./$EXE $HOST $PORT "-nice" 
     echo "Sending message: exit"
     echo "Goodbye"
 elif [ -n "$1" ] && [ $1 == "-query" ] && [ "$#" -eq 5 ]; then
@@ -36,7 +36,7 @@ elif [ -n "$1" ] && [ $1 == "-query" ] && [ "$#" -eq 5 ]; then
     else
         input="$stat, $ymd, $hour, $filter\nexit\n"
     fi
-    echo -e "$input" | ./$EXE $HOST $PORT
+    echo -e "$input" | ./$EXE $HOST $PORT "-nice"
     echo "Sending message: exit"
     echo "Goodbye"
 else

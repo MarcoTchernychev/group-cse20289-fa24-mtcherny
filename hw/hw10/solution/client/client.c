@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
 	int portnum;
 	int rc;
 	char nice[20];
+	int niceBool = 0;
 	
 	//check that the hostname and port number are properly entered as command line arguments
 	if (argc == 3 || argc == 4) {
@@ -35,7 +36,8 @@ int main(int argc, char *argv[]) {
 			if(strcmp(nice, "-nice")!=0){
 				printf("Error: make sure optional fourth argument is -nice\n");
 				exit(-1);
-			}
+			} 
+			niceBool = 1;
 		}
 	} else {
 		printf("Usage: ./client hostname portnumber {-nice}\n");
@@ -61,6 +63,10 @@ int main(int argc, char *argv[]) {
 	//variables to store sent and received messages
 	char response[MAX_RESPONSE];
 	char msg[MAX_MSG_LEN];
+	char temp[MAX_MSG_LEN];
+	//for listmore functionality
+	char list[MAX_MSG_LEN] = "list, ";
+	char *rest;
 	
 	//variables for determining if input message has proper number of fields
 	char *token;
@@ -103,6 +109,45 @@ int main(int argc, char *argv[]) {
 				continue;
 			}
 		}
+		
+		//if nice envoked, prepend "nice" to send to python server
+		if (niceBool) {
+			strcpy(temp, msg);
+			strcpy(msg, "nice");
+			strcat(msg, temp);
+		}
+
+		//for bbf, batch cmd of listmore to execute list and subsequent amount of mores
+		if (strncmp(msg, "listmore", strlen("listmore")) == 0) {
+			rest = msg + 10;
+			strcat(list, rest);
+			//first call list & see how many records match
+			if (zmq_send(requester, list, strlen(list), 0) == -1) {
+				printf("Failed to send message\n");
+				continue;
+			}
+			memset(response, 0, MAX_RESPONSE);
+			if (zmq_recv(requester, response, MAX_RESPONSE, 0) == -1) {
+				printf("Failed to receive response\n");
+				continue;
+			}
+			rest = response + 9;
+			//call more corresponding to amt of records found in list
+			for (int i = 0; i < atoi(rest); i++) {
+				if (zmq_send(requester, "more", strlen("more"), 0) == -1) {
+					printf("Failed to send message\n");
+					continue;
+				}
+				memset(response, 0, MAX_RESPONSE);
+				if (zmq_recv(requester, response, MAX_RESPONSE, 0) == -1) {
+					printf("Failed to receive response\n");
+					continue;
+				}
+				printf("%s\n",response);
+			}
+			continue;	
+		}
+
 
 		//send to python via ZMQ
 		printf("Sending message: %s\n", msg);		
